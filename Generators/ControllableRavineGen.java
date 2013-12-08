@@ -15,7 +15,7 @@ import net.minecraft.world.gen.MapGenRavine;
 import Reika.CaveControl.CaveControl;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
-import Reika.CaveControl.Registry.ControllableBiomes;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableRavineGen extends MapGenRavine {
 
@@ -51,6 +51,6 @@ public class ControllableRavineGen extends MapGenRavine {
 		int x = chunkX*16;
 		int z = chunkZ*16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-		return ControlOptions.RAVINES.getValue(ControllableBiomes.getEntry(biome));
+		return ControlOptions.RAVINES.getValue(BiomeTypeList.getEntry(biome));
 	}
 }

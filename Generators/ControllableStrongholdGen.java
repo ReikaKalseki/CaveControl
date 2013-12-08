@@ -15,7 +15,7 @@ import net.minecraft.world.gen.structure.MapGenStronghold;
 import Reika.CaveControl.CaveControl;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
-import Reika.CaveControl.Registry.ControllableBiomes;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableStrongholdGen extends MapGenStronghold {
 
@@ -28,7 +28,7 @@ public class ControllableStrongholdGen extends MapGenStronghold {
 		else {
 			World world = worldObj;
 			BiomeGenBase biome = world.getBiomeGenForCoords(x*16, z*16);
-			return CaveControl.config.getBoolean(ControllableBiomes.getEntry(biome), ControlOptions.STRONGHOLDS) ? super.canSpawnStructureAtCoords(x, z) : false;
+			return CaveControl.config.getBoolean(BiomeTypeList.getEntry(biome), ControlOptions.STRONGHOLDS) ? super.canSpawnStructureAtCoords(x, z) : false;
 		}
 	}
 }

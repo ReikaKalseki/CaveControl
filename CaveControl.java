@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.Event.Result;
+import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
@@ -24,8 +25,8 @@ import Reika.CaveControl.Generators.ControllableRavineGen;
 import Reika.CaveControl.Generators.ControllableStrongholdGen;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
-import Reika.CaveControl.Registry.ControllableBiomes;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
@@ -125,7 +126,7 @@ public class CaveControl extends DragonAPIMod {
 		return logger;
 	}
 
-	@ForgeSubscribe
+	@ForgeSubscribe(priority = EventPriority.LOWEST)
 	public void caveControl(InitMapGenEvent ev) {
 		switch(ev.type) {
 		case CAVE:
@@ -150,17 +151,17 @@ public class CaveControl extends DragonAPIMod {
 		}
 	}
 
-	@ForgeSubscribe
+	@ForgeSubscribe(priority = EventPriority.LOWEST)
 	public void dungeonControl(PopulateChunkEvent.Populate ev) {
 		if (ev.type == PopulateChunkEvent.Populate.EventType.DUNGEON) {
 			if (CaveOptions.GLOBAL.getState())
-				ev.setResult(config.getGlobalBoolean(ControlOptions.DUNGEONS) ? Result.DEFAULT : Result.DENY);
+				ev.setResult(config.getGlobalBoolean(ControlOptions.DUNGEONS) ? ev.getResult() : Result.DENY);
 			else {
 				World world = ev.world;
 				int x = ev.chunkX*16;
 				int z = ev.chunkZ*16;
 				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-				ev.setResult(ControlOptions.DUNGEONS.getFlag(ControllableBiomes.getEntry(biome)) ? Result.DEFAULT : Result.DENY);
+				ev.setResult(ControlOptions.DUNGEONS.getFlag(BiomeTypeList.getEntry(biome)) ? ev.getResult() : Result.DENY);
 			}
 		}
 	}

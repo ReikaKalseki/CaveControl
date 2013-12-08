@@ -15,7 +15,7 @@ import net.minecraft.world.gen.MapGenCaves;
 import Reika.CaveControl.CaveControl;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
-import Reika.CaveControl.Registry.ControllableBiomes;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableCaveGen extends MapGenCaves {
 
@@ -41,7 +41,7 @@ public class ControllableCaveGen extends MapGenCaves {
 					double d2 = par3 * 16 + rand.nextInt(16);
 					int k1 = 1;
 
-					if (rand.nextInt(density >= 3 ? 2 : 4) == 0)
+					if (rand.nextInt(Math.max(1, (int)(4/Math.sqrt(factor)))) == 0)
 					{
 						this.generateLargeCaveNode(rand.nextLong(), par4, par5, par6ArrayOfByte, d0, d1, d2);
 						k1 += rand.nextInt(4);
@@ -72,6 +72,6 @@ public class ControllableCaveGen extends MapGenCaves {
 		int x = chunkX*16;
 		int z = chunkZ*16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-		return ControlOptions.CAVES.getValue(ControllableBiomes.getEntry(biome));
+		return ControlOptions.CAVES.getValue(BiomeTypeList.getEntry(biome));
 	}
 }

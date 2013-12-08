@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
-import Reika.CaveControl.Registry.ControllableBiomes;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
@@ -31,7 +31,7 @@ public class CaveConfig extends ControlledConfig {
 		super(mod, option, blocks, items, id, cfg);
 	}
 
-	private HashMap<ControllableBiomes, HashMap<ControlOptions, Object>> options = new HashMap();
+	private HashMap<BiomeTypeList, HashMap<ControlOptions, Object>> options = new HashMap();
 	private Object[] global = new Object[ControlOptions.optionList.length];
 
 	//Initialization of the config
@@ -42,8 +42,8 @@ public class CaveConfig extends ControlledConfig {
 
 		config.load();
 
-		for (int i = 0; i < ControllableBiomes.biomeList.length; i++) {
-			ControllableBiomes biome = ControllableBiomes.biomeList[i];
+		for (int i = 0; i < BiomeTypeList.biomeList.length; i++) {
+			BiomeTypeList biome = BiomeTypeList.biomeList[i];
 			String biomename = biome.displayName;
 			for (int j = 0; j < ControlOptions.optionList.length; j++) {
 				ControlOptions o = ControlOptions.optionList[j];
@@ -69,7 +69,7 @@ public class CaveConfig extends ControlledConfig {
 		config.save();
 	}
 
-	private void addDataEntry(ControllableBiomes biome, ControlOptions option, Object value) {
+	private void addDataEntry(BiomeTypeList biome, ControlOptions option, Object value) {
 		HashMap<ControlOptions, Object> map = options.get(biome);
 		if (map == null) {
 			map = new HashMap();
@@ -105,8 +105,8 @@ public class CaveConfig extends ControlledConfig {
 					p.println(label+": "+String.valueOf(controls[i]));
 				}
 
-				for (int i = 0; i < ControllableBiomes.biomeList.length; i++) {
-					ControllableBiomes biome = ControllableBiomes.biomeList[i];
+				for (int i = 0; i < BiomeTypeList.biomeList.length; i++) {
+					BiomeTypeList biome = BiomeTypeList.biomeList[i];
 					String biomename = biome.displayName;
 					for (int j = 0; j < ControlOptions.optionList.length; j++) {
 						ControlOptions o = ControlOptions.optionList[j];
@@ -137,7 +137,7 @@ public class CaveConfig extends ControlledConfig {
 		configFile.delete();
 	}
 
-	public float getFloat(ControllableBiomes biome, ControlOptions type) {
+	public float getFloat(BiomeTypeList biome, ControlOptions type) {
 		try {
 			return ((Double)options.get(biome).get(type)).floatValue();
 		}
@@ -149,7 +149,7 @@ public class CaveConfig extends ControlledConfig {
 		}
 	}
 
-	public boolean getBoolean(ControllableBiomes biome, ControlOptions type) {
+	public boolean getBoolean(BiomeTypeList biome, ControlOptions type) {
 		try {
 			return (Boolean)options.get(biome).get(type);
 		}

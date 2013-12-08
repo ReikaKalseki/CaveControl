@@ -10,6 +10,7 @@
 package Reika.CaveControl.Registry;
 
 import Reika.CaveControl.CaveControl;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public enum ControlOptions {
 
@@ -40,7 +41,7 @@ public enum ControlOptions {
 		displayName = n;
 	}
 
-	public float getValue(ControllableBiomes biome) {
+	public float getValue(BiomeTypeList biome) {
 		if (biome == null) {
 			CaveControl.logger.debug(biome+" has no data!");
 			return CaveControl.config.getGlobalFloat(this);
@@ -48,7 +49,7 @@ public enum ControlOptions {
 		return CaveControl.config.getFloat(biome, this);
 	}
 
-	public boolean getFlag(ControllableBiomes biome) {
+	public boolean getFlag(BiomeTypeList biome) {
 		if (biome == null) {
 			CaveControl.logger.debug(biome+" has no data!");
 			return CaveControl.config.getGlobalBoolean(this);
