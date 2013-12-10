@@ -11,6 +11,7 @@ package Reika.CaveControl;
 
 import java.net.URL;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
@@ -161,9 +162,24 @@ public class CaveControl extends DragonAPIMod {
 				int x = ev.chunkX*16;
 				int z = ev.chunkZ*16;
 				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-				ev.setResult(ControlOptions.DUNGEONS.getFlag(BiomeTypeList.getEntry(biome)) ? ev.getResult() : Result.DENY);
+				ev.setResult(ControlOptions.DUNGEONS.getBoolean(BiomeTypeList.getEntry(biome)) ? ev.getResult() : Result.DENY);
 			}
 		}
+	}
+
+	public static boolean fillDeepCavesWithLava(BiomeGenBase biome) {
+		if (CaveOptions.GLOBAL.getState()) {
+			return CaveControl.config.getGlobalBoolean(ControlOptions.DEEPLAVA);
+		}
+		return ControlOptions.DEEPLAVA.getBoolean(BiomeTypeList.getEntry(biome));
+	}
+
+	public static byte getBlockToFillDeepCaves(BiomeGenBase biome) {
+		if (CaveOptions.GLOBAL.getState()) {
+			return CaveControl.config.getGlobalBoolean(ControlOptions.DEEPWATER) ? (byte)Block.waterMoving.blockID : 0;
+		}
+		return ControlOptions.DEEPWATER.getBoolean(BiomeTypeList.getEntry(biome)) ? (byte)Block.waterMoving.blockID : 0;
+
 	}
 
 }

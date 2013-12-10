@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.CaveControl.Generators;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.MapGenCaves;
@@ -20,49 +21,50 @@ import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 public class ControllableCaveGen extends MapGenCaves {
 
 	@Override
-	protected void recursiveGenerate(World world, int par2, int par3, int par4, int par5, byte[] par6ArrayOfByte)
+	protected void recursiveGenerate(World world, int local_chunkX, int local_chunkZ, int chunkX, int chunkZ, byte[] columnData)
 	{
 		if (CaveControl.config.shouldGenerateCaves()) {
-			float factor = this.getFactor(world, par2, par4);
+			float factor = this.getFactor(world, local_chunkX, local_chunkZ);
 			if (factor > 0) {
-				int density = (int)(15/factor);
-				int i1 = rand.nextInt(rand.nextInt(rand.nextInt(40) + 1) + 1);
+				int density = (int)(15/factor); //15 is default
+
+				int caveCount = rand.nextInt(rand.nextInt(rand.nextInt(40) + 1) + 1);
 
 				if (rand.nextInt(Math.max(density, 1)) != 0)
-				{
-					i1 = 0;
-				}
+					caveCount = 0;
 
-				for (int j1 = 0; j1 < i1; ++j1)
-				{
+				for (int i = 0; i < caveCount; i++) {
 					//ReikaJavaLibrary.pConsole((par2*16)+", "+par3+", "+(par4*16)+":"+par5);//+": Chunk Data:"+Arrays.toString(par6ArrayOfByte));
-					double d0 = par2 * 16 + rand.nextInt(16);
-					double d1 = rand.nextInt(rand.nextInt(120) + 8);
-					double d2 = par3 * 16 + rand.nextInt(16);
-					int k1 = 1;
+					double caveX = local_chunkX * 16 + rand.nextInt(16);
+					double caveY = rand.nextInt(rand.nextInt(120) + 8);
+					double caveZ = local_chunkZ * 16 + rand.nextInt(16);
 
-					if (rand.nextInt(Math.max(1, (int)(4/Math.sqrt(factor)))) == 0)
-					{
-						this.generateLargeCaveNode(rand.nextLong(), par4, par5, par6ArrayOfByte, d0, d1, d2);
-						k1 += rand.nextInt(4);
-					}
+					if (this.doGenAt(caveY)) {
+						int nodeCount = 1;
 
-					for (int l1 = 0; l1 < k1; ++l1)
-					{
-						float f = rand.nextFloat() * (float)Math.PI * 2.0F;
-						float f1 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
-						float f2 = rand.nextFloat() * 2.0F + rand.nextFloat();
-
-						if (rand.nextInt(10) == 0)
-						{
-							f2 *= rand.nextFloat() * rand.nextFloat() * 3.0F + 1.0F;
+						if (rand.nextInt(Math.max(1, (int)(4/Math.sqrt(factor)))) == 0) {
+							this.generateLargeCaveNode(rand.nextLong(), chunkX, chunkZ, columnData, caveX, caveY, caveZ);
+							nodeCount += rand.nextInt(4);
 						}
 
-						this.generateCaveNode(rand.nextLong(), par4, par5, par6ArrayOfByte, d0, d1, d2, f2, f, f1, 0, 0, 1.0D);
+						for (int k = 0; k < nodeCount; k++) {
+							float f = rand.nextFloat() * (float)Math.PI * 2.0F;
+							float f1 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
+							float f2 = rand.nextFloat() * 2.0F + rand.nextFloat();
+
+							if (rand.nextInt(10) == 0)
+								f2 *= rand.nextFloat() * rand.nextFloat() * 3.0F + 1.0F;
+
+							this.generateCaveNode(rand.nextLong(), chunkX, chunkZ, columnData, caveX, caveY, caveZ, f2, f, f1, 0, 0, 1.0D);
+						}
 					}
 				}
 			}
 		}
+	}
+
+	private boolean doGenAt(double y) {
+		return true;
 	}
 
 	private float getFactor(World world, int chunkX, int chunkZ) {
@@ -73,5 +75,41 @@ public class ControllableCaveGen extends MapGenCaves {
 		int z = chunkZ*16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		return ControlOptions.CAVES.getValue(BiomeTypeList.getEntry(biome));
+	}
+
+	@Override
+	protected void digBlock(byte[] data, int index, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop)
+	{
+		super.digBlock(data, index, x, y, z, chunkX, chunkZ, foundTop);
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
+
+		//Edit data[index] to edit the block being written into by a cave; data[0] is the bottom bedrock layer
+		int blockID = data[index];
+
+		if (!CaveControl.fillDeepCavesWithLava(biome)) {
+			if (blockID == Block.lavaMoving.blockID || blockID == Block.lavaStill.blockID) {
+				byte id = CaveControl.getBlockToFillDeepCaves(biome);
+				data[index] = id;
+				if (id == 0) { //Smooth cave floors to y=4 with stone (so to avoid jagged bedrock floors)
+					for (int i = 1; i < 4; i++) { //not y=0 since that is always solid bedrock
+						byte inPlace = data[i];
+						if (inPlace == 0)
+							data[i] = (byte)Block.stone.blockID;
+					}
+				}
+				else {
+
+				}
+			}
+		}
+	}
+
+	@Override
+	protected boolean isOceanBlock(byte[] data, int index, int x, int y, int z, int chunkX, int chunkZ)
+	{
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
+		if (ControlOptions.DEEPWATER.getBoolean(BiomeTypeList.getEntry(biome)))
+			return false;
+		return data[index] == Block.waterMoving.blockID || data[index] == Block.waterStill.blockID;
 	}
 }

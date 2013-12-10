@@ -142,7 +142,8 @@ public class CaveConfig extends ControlledConfig {
 			return ((Double)options.get(biome).get(type)).floatValue();
 		}
 		catch (NullPointerException e) {
-			throw new RegistrationException(CaveControl.instance, "No data loaded for biome type "+biome.displayName+"!");
+			//throw new RegistrationException(CaveControl.instance, "No data loaded for biome type "+biome.displayName+"!");
+			return 1;
 		}
 		catch (ClassCastException e) {
 			throw new RegistrationException(CaveControl.instance, "Invalid data for biome type "+biome.displayName+" and option "+type.displayName+"!");
@@ -154,7 +155,8 @@ public class CaveConfig extends ControlledConfig {
 			return (Boolean)options.get(biome).get(type);
 		}
 		catch (NullPointerException e) {
-			throw new RegistrationException(CaveControl.instance, "No data loaded for biome type "+biome.displayName+"!");
+			//throw new RegistrationException(CaveControl.instance, "No data loaded for biome type "+biome.displayName+"!");
+			return true;
 		}
 		catch (ClassCastException e) {
 			throw new RegistrationException(CaveControl.instance, "Invalid data for biome type "+biome.displayName+" and option "+type.displayName+"!");

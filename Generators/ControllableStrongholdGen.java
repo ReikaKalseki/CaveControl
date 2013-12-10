@@ -20,15 +20,15 @@ import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 public class ControllableStrongholdGen extends MapGenStronghold {
 
 	@Override
-	protected boolean canSpawnStructureAtCoords(int x, int z)
+	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ)
 	{
 		if (CaveOptions.GLOBAL.getState()) {
-			return CaveControl.config.getGlobalBoolean(ControlOptions.STRONGHOLDS) ? super.canSpawnStructureAtCoords(x, z) : false;
+			return CaveControl.config.getGlobalBoolean(ControlOptions.STRONGHOLDS) ? super.canSpawnStructureAtCoords(chunkX, chunkZ) : false;
 		}
 		else {
 			World world = worldObj;
-			BiomeGenBase biome = world.getBiomeGenForCoords(x*16, z*16);
-			return CaveControl.config.getBoolean(BiomeTypeList.getEntry(biome), ControlOptions.STRONGHOLDS) ? super.canSpawnStructureAtCoords(x, z) : false;
+			BiomeGenBase biome = world.getBiomeGenForCoords(chunkX*16, chunkZ*16);
+			return CaveControl.config.getBoolean(BiomeTypeList.getEntry(biome), ControlOptions.STRONGHOLDS) ? super.canSpawnStructureAtCoords(chunkX, chunkZ) : false;
 		}
 	}
 }

@@ -18,7 +18,9 @@ public enum ControlOptions {
 	RAVINES("Ravine Frequency Multiplier", 1F),
 	MINESHAFTS("Generate Abandoned Mineshafts", true),
 	DUNGEONS("Generate Dungeons", true),
-	STRONGHOLDS("Generate Strongholds", true);
+	STRONGHOLDS("Generate Strongholds", true),
+	DEEPLAVA("Fill Deep Caves with Lava", true),
+	DEEPWATER("Fill Deep Caves with Water", false);
 
 	public final boolean defaultState;
 	public final float defaultValue;
@@ -49,7 +51,7 @@ public enum ControlOptions {
 		return CaveControl.config.getFloat(biome, this);
 	}
 
-	public boolean getFlag(BiomeTypeList biome) {
+	public boolean getBoolean(BiomeTypeList biome) {
 		if (biome == null) {
 			CaveControl.logger.debug(biome+" has no data!");
 			return CaveControl.config.getGlobalBoolean(this);

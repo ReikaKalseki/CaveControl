@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.CaveControl.Generators;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.MapGenRavine;
@@ -20,25 +21,20 @@ import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 public class ControllableRavineGen extends MapGenRavine {
 
 	@Override
-	protected void recursiveGenerate(World world, int par2, int par3, int par4, int par5, byte[] par6ArrayOfByte)
+	protected void recursiveGenerate(World world, int local_chunkX, int local_chunkZ, int chunkX, int chunkZ, byte[] columnData)
 	{
 		if (CaveControl.config.shouldGenerateRavines()) {
-			float factor = this.getFactor(world, par2, par4);
+			float factor = this.getFactor(world, local_chunkX, local_chunkZ);
 			if (factor > 0) {
-				if (rand.nextInt(Math.max(1, (int)(50/factor))) == 0)
-				{
-					double d0 = par2 * 16 + rand.nextInt(16);
-					double d1 = rand.nextInt(rand.nextInt(40) + 8) + 20;
-					double d2 = par3 * 16 + rand.nextInt(16);
-					byte b0 = 1;
+				if (rand.nextInt(Math.max(1, (int)(50/factor))) == 0) {
+					double ravineX = local_chunkX * 16 + rand.nextInt(16);
+					double ravineY = rand.nextInt(rand.nextInt(40) + 8) + 20;
+					double ravineZ = local_chunkZ * 16 + rand.nextInt(16);
 
-					for (int i1 = 0; i1 < b0; ++i1)
-					{
-						float f = rand.nextFloat() * (float)Math.PI * 2.0F;
-						float f1 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
-						float f2 = (rand.nextFloat() * 2.0F + rand.nextFloat()) * 2.0F;
-						this.generateRavine(rand.nextLong(), par4, par5, par6ArrayOfByte, d0, d1, d2, f2, f, f1, 0, 0, 3.0D);
-					}
+					float f = rand.nextFloat() * (float)Math.PI * 2.0F;
+					float f1 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
+					float f2 = (rand.nextFloat() * 2.0F + rand.nextFloat()) * 2.0F;
+					this.generateRavine(rand.nextLong(), chunkX, chunkZ, columnData, ravineX, ravineY, ravineZ, f2, f, f1, 0, 0, 3.0D);
 				}
 			}
 		}
@@ -52,5 +48,41 @@ public class ControllableRavineGen extends MapGenRavine {
 		int z = chunkZ*16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		return ControlOptions.RAVINES.getValue(BiomeTypeList.getEntry(biome));
+	}
+
+	@Override
+	protected void digBlock(byte[] data, int index, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop)
+	{
+		super.digBlock(data, index, x, y, z, chunkX, chunkZ, foundTop);
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
+
+		//Edit data[index] to edit the block being written into by a cave; data[0] is the bottom bedrock layer
+		int blockID = data[index];
+
+		if (!CaveControl.fillDeepCavesWithLava(biome)) {
+			if (blockID == Block.lavaMoving.blockID || blockID == Block.lavaStill.blockID) {
+				byte id = CaveControl.getBlockToFillDeepCaves(biome);
+				data[index] = id;
+				if (id == 0) { //Smooth cave floors to y=4 with stone (so to avoid jagged bedrock floors)
+					for (int i = 1; i < 4; i++) { //not y=0 since that is always solid bedrock
+						byte inPlace = data[i];
+						if (inPlace == 0)
+							data[i] = (byte)Block.stone.blockID;
+					}
+				}
+				else {
+
+				}
+			}
+		}
+	}
+
+	@Override
+	protected boolean isOceanBlock(byte[] data, int index, int x, int y, int z, int chunkX, int chunkZ)
+	{
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
+		if (ControlOptions.DEEPWATER.getBoolean(BiomeTypeList.getEntry(biome)))
+			return false;
+		return data[index] == Block.waterMoving.blockID || data[index] == Block.waterStill.blockID;
 	}
 }
