@@ -39,7 +39,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod( modid = "CaveControl", name="CaveControl", version="beta", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="after:DragonAPI")
+@Mod( modid = "CaveControl", name="CaveControl", version="beta", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class CaveControl extends DragonAPIMod {
 
