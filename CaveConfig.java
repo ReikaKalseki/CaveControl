@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.CaveControl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 
 import Reika.CaveControl.Registry.CaveOptions;
@@ -22,8 +19,6 @@ import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Interfaces.ConfigList;
 import Reika.DragonAPI.Interfaces.IDRegistry;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class CaveConfig extends ControlledConfig {
 
@@ -34,14 +29,8 @@ public class CaveConfig extends ControlledConfig {
 	private HashMap<BiomeTypeList, HashMap<ControlOptions, Object>> options = new HashMap();
 	private Object[] global = new Object[ControlOptions.optionList.length];
 
-	//Initialization of the config
 	@Override
-	public void initProps(FMLPreInitializationEvent event) {
-
-		super.initProps(event);
-
-		config.load();
-
+	protected void loadAdditionalData() {
 		for (int i = 0; i < BiomeTypeList.biomeList.length; i++) {
 			BiomeTypeList biome = BiomeTypeList.biomeList[i];
 			String biomename = biome.displayName;
@@ -63,10 +52,6 @@ public class CaveConfig extends ControlledConfig {
 			else
 				global[o.ordinal()] = (config.get("$Global Control", optionname, o.defaultValue).getDouble(o.defaultValue));
 		}
-
-		/*******************************/
-		//save the data
-		config.save();
 	}
 
 	private void addDataEntry(BiomeTypeList biome, ControlOptions option, Object value) {
@@ -77,7 +62,7 @@ public class CaveConfig extends ControlledConfig {
 		map.put(option, value);
 		options.put(biome, map);
 	}
-
+	/*
 	@Override
 	protected void resetConfigFile() {
 		String path = this.getConfigPath()+"_Old_Config_Backup.txt";
@@ -135,7 +120,7 @@ public class CaveConfig extends ControlledConfig {
 			e.printStackTrace();
 		}
 		configFile.delete();
-	}
+	}*/
 
 	public float getFloat(BiomeTypeList biome, ControlOptions type) {
 		try {
