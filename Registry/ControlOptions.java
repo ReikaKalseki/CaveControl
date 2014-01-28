@@ -45,7 +45,7 @@ public enum ControlOptions {
 
 	public float getValue(BiomeTypeList biome) {
 		if (biome == null) {
-			CaveControl.logger.debug(biome+" has no data!");
+			//CaveControl.logger.debug(biome+" has no data!");
 			return CaveControl.config.getGlobalFloat(this);
 		}
 		return CaveControl.config.getFloat(biome, this);
@@ -53,7 +53,7 @@ public enum ControlOptions {
 
 	public boolean getBoolean(BiomeTypeList biome) {
 		if (biome == null) {
-			CaveControl.logger.debug(biome+" has no data!");
+			//CaveControl.logger.debug(biome+" has no data!");
 			return CaveControl.config.getGlobalBoolean(this);
 		}
 		return CaveControl.config.getBoolean(biome, this);
