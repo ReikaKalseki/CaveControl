@@ -66,7 +66,7 @@ public class CaveControl extends DragonAPIMod {
 
 		MinecraftForge.TERRAIN_GEN_BUS.register(this);
 
-		logger = new ModLogger(instance, CaveOptions.LOGLOADING.getState(), CaveOptions.DEBUGMODE.getState(), false);
+		logger = new ModLogger(instance, false);
 
 		this.basicSetup(evt);
 	}

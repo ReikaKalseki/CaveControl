@@ -16,8 +16,6 @@ import Reika.DragonAPI.Interfaces.ConfigList;
 
 public enum CaveOptions implements ConfigList {
 
-	LOGLOADING("Console Loading Info", true),
-	DEBUGMODE("Debug Mode", false),
 	GLOBAL("Use Global Controls", true);
 
 	private String label;
