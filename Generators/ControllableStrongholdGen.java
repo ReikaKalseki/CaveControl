@@ -9,13 +9,14 @@
  ******************************************************************************/
 package Reika.CaveControl.Generators;
 
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.gen.structure.MapGenStronghold;
 import Reika.CaveControl.CaveControl;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
 import Reika.DragonAPI.Auxiliary.BiomeTypeList;
+
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.gen.structure.MapGenStronghold;
 
 public class ControllableStrongholdGen extends MapGenStronghold {
 

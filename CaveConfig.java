@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.CaveControl;
 
-import java.util.HashMap;
-
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
 import Reika.DragonAPI.Auxiliary.BiomeTypeList;
@@ -20,10 +18,12 @@ import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Interfaces.ConfigList;
 import Reika.DragonAPI.Interfaces.IDRegistry;
 
+import java.util.HashMap;
+
 public class CaveConfig extends ControlledConfig {
 
-	public CaveConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] blocks, IDRegistry[] items, IDRegistry[] id, int cfg) {
-		super(mod, option, blocks, items, id, cfg);
+	public CaveConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id, int cfg) {
+		super(mod, option, id, cfg);
 	}
 
 	private HashMap<BiomeTypeList, HashMap<ControlOptions, Object>> options = new HashMap();

@@ -9,17 +9,6 @@
  ******************************************************************************/
 package Reika.CaveControl;
 
-import java.net.URL;
-
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.Event.Result;
-import net.minecraftforge.event.EventPriority;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.terraingen.InitMapGenEvent;
-import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import Reika.CaveControl.Generators.ControllableCaveGen;
 import Reika.CaveControl.Generators.ControllableMineshaftGen;
 import Reika.CaveControl.Generators.ControllableRavineGen;
@@ -31,22 +20,34 @@ import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 import Reika.DragonAPI.Auxiliary.CommandableUpdateChecker;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
+
+import java.net.URL;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 @Mod( modid = "CaveControl", name="CaveControl", version="beta", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true)
+
 public class CaveControl extends DragonAPIMod {
 
 	@Instance("CaveControl")
 	public static CaveControl instance = new CaveControl();
 
-	public static final CaveConfig config = new CaveConfig(instance, CaveOptions.optionList, null, null, null, 0);
+	public static final CaveConfig config = new CaveConfig(instance, CaveOptions.optionList, null, 0);
 
 	public static ModLogger logger;
 
@@ -116,7 +117,7 @@ public class CaveControl extends DragonAPIMod {
 		return logger;
 	}
 
-	@ForgeSubscribe(priority = EventPriority.LOWEST)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void caveControl(InitMapGenEvent ev) {
 		switch(ev.type) {
 		case CAVE:
@@ -141,7 +142,7 @@ public class CaveControl extends DragonAPIMod {
 		}
 	}
 
-	@ForgeSubscribe(priority = EventPriority.LOWEST)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void dungeonControl(PopulateChunkEvent.Populate ev) {
 		if (ev.type == PopulateChunkEvent.Populate.EventType.DUNGEON) {
 			if (CaveOptions.GLOBAL.getState())
@@ -163,11 +164,11 @@ public class CaveControl extends DragonAPIMod {
 		return ControlOptions.DEEPLAVA.getBoolean(BiomeTypeList.getEntry(biome));
 	}
 
-	public static byte getBlockToFillDeepCaves(BiomeGenBase biome) {
+	public static Block getBlockToFillDeepCaves(BiomeGenBase biome) {
 		if (CaveOptions.GLOBAL.getState()) {
-			return CaveControl.config.getGlobalBoolean(ControlOptions.DEEPWATER) ? (byte)Block.waterMoving.blockID : 0;
+			return CaveControl.config.getGlobalBoolean(ControlOptions.DEEPWATER) ? Blocks.flowing_water : Blocks.air;
 		}
-		return ControlOptions.DEEPWATER.getBoolean(BiomeTypeList.getEntry(biome)) ? (byte)Block.waterMoving.blockID : 0;
+		return ControlOptions.DEEPWATER.getBoolean(BiomeTypeList.getEntry(biome)) ? Blocks.flowing_water : Blocks.air;
 
 	}
 
