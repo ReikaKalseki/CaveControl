@@ -9,16 +9,15 @@
  ******************************************************************************/
 package Reika.CaveControl.Generators;
 
-import Reika.CaveControl.CaveControl;
-import Reika.CaveControl.Registry.CaveOptions;
-import Reika.CaveControl.Registry.ControlOptions;
-import Reika.DragonAPI.Auxiliary.BiomeTypeList;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.MapGenRavine;
+import Reika.CaveControl.CaveControl;
+import Reika.CaveControl.Registry.CaveOptions;
+import Reika.CaveControl.Registry.ControlOptions;
+import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableRavineGen extends MapGenRavine {
 

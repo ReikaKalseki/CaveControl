@@ -9,11 +9,10 @@
  ******************************************************************************/
 package Reika.CaveControl.Registry;
 
+import net.minecraftforge.common.config.Configuration;
 import Reika.CaveControl.CaveControl;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.ConfigList;
-
-import net.minecraftforge.common.config.Configuration;
 
 public enum CaveOptions implements ConfigList {
 
