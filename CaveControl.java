@@ -28,6 +28,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Base.DragonAPIMod;
+import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -61,6 +62,7 @@ public class CaveControl extends DragonAPIMod {
 	@Override
 	@EventHandler
 	public void preload(FMLPreInitializationEvent evt) {
+		this.startTiming(LoadPhase.PRELOAD);
 		this.verifyVersions();
 		config.loadSubfolderedConfigFile(evt);
 		config.initProps(evt);
@@ -70,21 +72,25 @@ public class CaveControl extends DragonAPIMod {
 		logger = new ModLogger(instance, false);
 
 		this.basicSetup(evt);
+		this.finishTiming();
 	}
 
 	@Override
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
+		this.startTiming(LoadPhase.LOAD);
 		caveGen = new ControllableCaveGen();
 		mineGen = new ControllableMineshaftGen();
 		strongholdGen = new ControllableStrongholdGen();
 		ravineGen = new ControllableRavineGen();
+		this.finishTiming();
 	}
 
 	@Override
 	@EventHandler
 	public void postload(FMLPostInitializationEvent evt) {
-
+		this.startTiming(LoadPhase.POSTLOAD);
+		this.finishTiming();
 	}
 
 	@Override
