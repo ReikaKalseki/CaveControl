@@ -62,65 +62,6 @@ public class CaveConfig extends ControlledConfig {
 		map.put(option, value);
 		options.put(biome, map);
 	}
-	/*
-	@Override
-	protected void resetConfigFile() {
-		String path = this.getConfigPath()+"_Old_Config_Backup.txt";
-		File backup = new File(path);
-		if (backup.exists())
-			backup.delete();
-		try {
-			ReikaJavaLibrary.pConsole(configMod.getDisplayName().toUpperCase()+": Writing Backup File to "+path);
-			ReikaJavaLibrary.pConsole(configMod.getDisplayName().toUpperCase()+": Use this to restore custom IDs if necessary.");
-			backup.createNewFile();
-			if (!backup.exists())
-				ReikaJavaLibrary.pConsole(configMod.getDisplayName().toUpperCase()+": Could not create backup file at "+path+"!");
-			else {
-				PrintWriter p = new PrintWriter(backup);
-				p.println("#####----------THESE ARE ALL THE OLD CONFIG SETTINGS YOU WERE USING----------#####");
-				p.println("#####---IF THEY DIFFER FROM THE DEFAULTS, YOU MUST RE-EDIT THE CONFIG FILE---#####");
-				for (int i = 0; i < CaveOptions.optionList.length; i++) {
-					String label = CaveOptions.optionList[i].getLabel();
-					if (CaveOptions.optionList[i].isBoolean())
-						controls[i] = CaveOptions.optionList[i].setState(config);
-					if (CaveOptions.optionList[i].isNumeric())
-						controls[i] = CaveOptions.optionList[i].setValue(config);
-					if (CaveOptions.optionList[i].isDecimal())
-						controls[i] = CaveOptions.optionList[i].setDecimal(config);
-					p.println(label+": "+String.valueOf(controls[i]));
-				}
-
-				for (int i = 0; i < BiomeTypeList.biomeList.length; i++) {
-					BiomeTypeList biome = BiomeTypeList.biomeList[i];
-					String biomename = biome.displayName;
-					for (int j = 0; j < ControlOptions.optionList.length; j++) {
-						ControlOptions o = ControlOptions.optionList[j];
-						String optionname = o.displayName;
-						if (o.isBoolean)
-							this.addDataEntry(biome, o, config.get(biomename, optionname, o.defaultState).getBoolean(o.defaultState));
-						else
-							this.addDataEntry(biome, o, config.get(biomename, optionname, o.defaultValue).getDouble(o.defaultValue));
-					}
-				}
-
-				for (int j = 0; j < ControlOptions.optionList.length; j++) {
-					ControlOptions o = ControlOptions.optionList[j];
-					String optionname = o.displayName;
-					if (o.isBoolean)
-						global[o.ordinal()] = (config.get("$Global Control", optionname, o.defaultState).getBoolean(o.defaultState));
-					else
-						global[o.ordinal()] = (config.get("$Global Control", optionname, o.defaultValue).getDouble(o.defaultValue));
-				}
-
-				p.close();
-			}
-		}
-		catch (IOException e) {
-			ReikaJavaLibrary.pConsole(configMod.getDisplayName().toUpperCase()+": Could not create backup file due to IOException!");
-			e.printStackTrace();
-		}
-		configFile.delete();
-	}*/
 
 	public float getFloat(BiomeTypeList biome, ControlOptions type) {
 		try {

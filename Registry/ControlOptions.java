@@ -20,7 +20,14 @@ public enum ControlOptions {
 	DUNGEONS("Generate Dungeons", true),
 	STRONGHOLDS("Generate Strongholds", true),
 	DEEPLAVA("Fill Deep Caves with Lava", true),
-	DEEPWATER("Fill Deep Caves with Water", false);
+	DEEPWATER("Fill Deep Caves with Water", false),
+	BIGCAVENODE("Large Cave Node Chance", 25F),
+	MINIMUMY("Cave Generation Y Min", 0),
+	MAXIMUMY("Cave Generation Y Max", 256),
+	LARGENODESIZE("Large Cave Node Size Factor", 1F),
+	LARGENODEVAR("Large Cave Node Size Variance", 6F),
+	CAVENODESIZE("Cave Node Size Multiplier", 1F),
+	VSTRETCH("Vertical Scale Factor", 1F);
 
 	public final boolean defaultState;
 	public final float defaultValue;
