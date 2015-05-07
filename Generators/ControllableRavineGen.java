@@ -35,10 +35,15 @@ public class ControllableRavineGen extends MapGenRavine {
 					float f = rand.nextFloat() * (float)Math.PI * 2.0F;
 					float f1 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
 					float f2 = (rand.nextFloat() * 2.0F + rand.nextFloat()) * 2.0F;
-					this.func_151540_a(rand.nextLong(), chunkX, chunkZ, columnData, ravineX, ravineY, ravineZ, f2, f, f1, 0, 0, 3.0D);
+					this.generateRavine(rand.nextLong(), chunkX, chunkZ, columnData, ravineX, ravineY, ravineZ, f2, f, f1, 0, 0, 3.0D);
 				}
 			}
 		}
+	}
+
+	protected void generateRavine(long seed, int cx, int cz, Block[] data, double rx, double ry, double rz, float f2, float f, float f1, int i1, int i2, double d1)
+	{
+		super.func_151540_a(seed, cx, cz, data, rx, ry, rz, f2, f, f1, i1, i2, d1);
 	}
 
 	private float getFactor(World world, int chunkX, int chunkZ) {
