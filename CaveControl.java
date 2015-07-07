@@ -40,7 +40,7 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-@Mod( modid = "CaveControl", name="CaveControl", version="beta", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
+@Mod( modid = "CaveControl", name="CaveControl", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI", acceptableRemoteVersions="*")
 
 public class CaveControl extends DragonAPIMod {
 
