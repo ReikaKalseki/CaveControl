@@ -25,6 +25,7 @@ import Reika.CaveControl.Generators.ControllableStrongholdGen;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.CaveControl.Registry.ControlOptions;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Base.DragonAPIMod;
@@ -67,9 +68,11 @@ public class CaveControl extends DragonAPIMod {
 		config.loadSubfolderedConfigFile(evt);
 		config.initProps(evt);
 
-		MinecraftForge.TERRAIN_GEN_BUS.register(this);
-
 		logger = new ModLogger(instance, false);
+		if (DragonOptions.FILELOG.getState())
+			logger.setOutput("**_Loading_Log.log");
+
+		MinecraftForge.TERRAIN_GEN_BUS.register(this);
 
 		this.basicSetup(evt);
 		this.finishTiming();
@@ -126,25 +129,25 @@ public class CaveControl extends DragonAPIMod {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void caveControl(InitMapGenEvent ev) {
 		switch(ev.type) {
-		case CAVE:
-			ev.newGen = caveGen;
-			break;
-		case MINESHAFT:
-			ev.newGen = mineGen;
-			break;
-		case NETHER_BRIDGE:
-			break;
-		case RAVINE:
-			ev.newGen = ravineGen;
-			break;
-		case SCATTERED_FEATURE:
-			break;
-		case STRONGHOLD:
-			ev.newGen = strongholdGen;
-			break;
-		default:
-			//ev.newGen = ev.originalGen;
-			break;
+			case CAVE:
+				ev.newGen = caveGen;
+				break;
+			case MINESHAFT:
+				ev.newGen = mineGen;
+				break;
+			case NETHER_BRIDGE:
+				break;
+			case RAVINE:
+				ev.newGen = ravineGen;
+				break;
+			case SCATTERED_FEATURE:
+				break;
+			case STRONGHOLD:
+				ev.newGen = strongholdGen;
+				break;
+			default:
+				//ev.newGen = ev.originalGen;
+				break;
 		}
 	}
 
