@@ -22,15 +22,12 @@ import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 
 public class CaveConfig extends ControlledConfig {
 
-	public CaveConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id, int cfg) {
-		super(mod, option, id, cfg);
-	}
+	private HashMap<BiomeTypeList, HashMap<ControlOptions, DataElement>> options = new HashMap();
+	private DataElement[] global = new DataElement[ControlOptions.optionList.length];
 
-	private HashMap<BiomeTypeList, HashMap<ControlOptions, Object>> options = new HashMap();
-	private Object[] global = new Object[ControlOptions.optionList.length];
+	public CaveConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id) {
+		super(mod, option, id);
 
-	@Override
-	protected void loadAdditionalData() {
 		for (int i = 0; i < BiomeTypeList.biomeList.length; i++) {
 			BiomeTypeList biome = BiomeTypeList.biomeList[i];
 			String biomename = biome.displayName;
@@ -38,9 +35,9 @@ public class CaveConfig extends ControlledConfig {
 				ControlOptions o = ControlOptions.optionList[j];
 				String optionname = o.displayName;
 				if (o.isBoolean)
-					this.addDataEntry(biome, o, config.get(biomename, optionname, o.defaultState).getBoolean(o.defaultState));
+					this.addDataEntry(biome, o, this.registerAdditionalOption(biomename, optionname, o.defaultState));
 				else
-					this.addDataEntry(biome, o, config.get(biomename, optionname, o.defaultValue).getDouble(o.defaultValue));
+					this.addDataEntry(biome, o, this.registerAdditionalOption(biomename, optionname, o.defaultValue));
 			}
 		}
 
@@ -48,14 +45,14 @@ public class CaveConfig extends ControlledConfig {
 			ControlOptions o = ControlOptions.optionList[j];
 			String optionname = o.displayName;
 			if (o.isBoolean)
-				global[o.ordinal()] = (config.get("$Global Control", optionname, o.defaultState).getBoolean(o.defaultState));
+				global[o.ordinal()] = this.registerAdditionalOption("$Global Control", optionname, o.defaultState);
 			else
-				global[o.ordinal()] = (config.get("$Global Control", optionname, o.defaultValue).getDouble(o.defaultValue));
+				global[o.ordinal()] = this.registerAdditionalOption("$Global Control", optionname, o.defaultValue);
 		}
 	}
 
-	private void addDataEntry(BiomeTypeList biome, ControlOptions option, Object value) {
-		HashMap<ControlOptions, Object> map = options.get(biome);
+	private void addDataEntry(BiomeTypeList biome, ControlOptions option, DataElement value) {
+		HashMap<ControlOptions, DataElement> map = options.get(biome);
 		if (map == null) {
 			map = new HashMap();
 		}
@@ -65,7 +62,7 @@ public class CaveConfig extends ControlledConfig {
 
 	public float getFloat(BiomeTypeList biome, ControlOptions type) {
 		try {
-			return ((Double)options.get(biome).get(type)).floatValue();
+			return ((Float)options.get(biome).get(type).getData()).floatValue();
 		}
 		catch (NullPointerException e) {
 			//throw new RegistrationException(CaveControl.instance, "No data loaded for biome type "+biome.displayName+"!");
@@ -78,7 +75,7 @@ public class CaveConfig extends ControlledConfig {
 
 	public boolean getBoolean(BiomeTypeList biome, ControlOptions type) {
 		try {
-			return (Boolean)options.get(biome).get(type);
+			return (Boolean)options.get(biome).get(type).getData();
 		}
 		catch (NullPointerException e) {
 			//throw new RegistrationException(CaveControl.instance, "No data loaded for biome type "+biome.displayName+"!");
@@ -91,7 +88,7 @@ public class CaveConfig extends ControlledConfig {
 
 	public float getGlobalFloat(ControlOptions type) {
 		try {
-			return ((Double)global[type.ordinal()]).floatValue();
+			return ((Float)global[type.ordinal()].getData()).floatValue();
 		}
 		catch (ClassCastException e) {
 			throw new RegistrationException(CaveControl.instance, "Invalid data for global option "+type.displayName+"!");
@@ -100,7 +97,7 @@ public class CaveConfig extends ControlledConfig {
 
 	public boolean getGlobalBoolean(ControlOptions type) {
 		try {
-			return (Boolean)global[type.ordinal()];
+			return (Boolean)global[type.ordinal()].getData();
 		}
 		catch (ClassCastException e) {
 			throw new RegistrationException(CaveControl.instance, "Invalid data for global option "+type.displayName+"!");
@@ -108,10 +105,10 @@ public class CaveConfig extends ControlledConfig {
 	}
 
 	public boolean shouldGenerateCaves() {
-		return !CaveOptions.GLOBAL.getState() || (Double)global[ControlOptions.CAVES.ordinal()] > 0;
+		return !CaveOptions.GLOBAL.getState() || (Float)global[ControlOptions.CAVES.ordinal()].getData() > 0;
 	}
 
 	public boolean shouldGenerateRavines() {
-		return !CaveOptions.GLOBAL.getState() || (Double)global[ControlOptions.RAVINES.ordinal()] > 0;
+		return !CaveOptions.GLOBAL.getState() || (Float)global[ControlOptions.RAVINES.ordinal()].getData() > 0;
 	}
 }

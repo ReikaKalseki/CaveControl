@@ -48,7 +48,7 @@ public class CaveControl extends DragonAPIMod {
 	@Instance("CaveControl")
 	public static CaveControl instance = new CaveControl();
 
-	public static final CaveConfig config = new CaveConfig(instance, CaveOptions.optionList, null, 0);
+	public static final CaveConfig config = new CaveConfig(instance, CaveOptions.optionList, null);
 
 	public static ModLogger logger;
 

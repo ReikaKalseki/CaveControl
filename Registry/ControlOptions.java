@@ -27,7 +27,8 @@ public enum ControlOptions {
 	LARGENODESIZE("Large Cave Node Size Factor", 1F),
 	LARGENODEVAR("Large Cave Node Size Variance", 6F),
 	CAVENODESIZE("Cave Node Size Multiplier", 1F),
-	VSTRETCH("Vertical Scale Factor", 1F);
+	VSTRETCH("Vertical Scale Factor", 1F),
+	DUNGEONRATE("Dungeon Spawn Factor", 1F);
 
 	public final boolean defaultState;
 	public final float defaultValue;
