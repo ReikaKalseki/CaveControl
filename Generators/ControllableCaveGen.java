@@ -21,7 +21,7 @@ import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableCaveGen extends MapGenCaves {
 
-	private final boolean global = CaveOptions.GLOBAL.getState();
+	private static final boolean global = CaveOptions.GLOBAL.getState();
 
 	@Override
 	protected void func_151538_a(World world, int local_chunkX, int local_chunkZ, int chunkX, int chunkZ, Block[] columnData) {

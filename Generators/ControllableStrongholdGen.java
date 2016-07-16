@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.CaveControl.Generators;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.structure.MapGenStronghold;
@@ -18,6 +22,22 @@ import Reika.CaveControl.Registry.ControlOptions;
 import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableStrongholdGen extends MapGenStronghold {
+
+	private static final Random rand = new Random();
+	private static final boolean global = CaveOptions.GLOBAL.getState();
+
+	public ControllableStrongholdGen() {
+		super(getMap());
+	}
+
+	private static Map getMap() {
+		Map map = new HashMap();
+		map.put("distance", String.valueOf(32D*CaveControl.config.getGlobalFloat(ControlOptions.STRONGHOLDDIST)));
+		int n = (int)CaveControl.config.getGlobalFloat(ControlOptions.STRONGHOLDCOUNT);
+		map.put("count", String.valueOf(n));
+		map.put("spread", String.valueOf(n));
+		return map;
+	}
 
 	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ)

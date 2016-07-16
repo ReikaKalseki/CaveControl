@@ -16,9 +16,12 @@ public enum ControlOptions {
 
 	CAVES("Cave Density Multiplier", 1F),
 	RAVINES("Ravine Frequency Multiplier", 1F),
-	MINESHAFTS("Generate Abandoned Mineshafts", true),
+	MINESHAFTS("Mineshafts Frequency Multiplier", 1F),
 	DUNGEONS("Generate Dungeons", true),
+	DUNGEONRATE("Dungeon Spawn Factor", 1F),
 	STRONGHOLDS("Generate Strongholds", true),
+	STRONGHOLDDIST("Stronghold Distance Factor", 1),
+	STRONGHOLDCOUNT("Stronghold Count", 3),
 	DEEPLAVA("Fill Deep Caves with Lava", true),
 	DEEPWATER("Fill Deep Caves with Water", false),
 	BIGCAVENODE("Large Cave Node Chance", 25F),
@@ -27,8 +30,7 @@ public enum ControlOptions {
 	LARGENODESIZE("Large Cave Node Size Factor", 1F),
 	LARGENODEVAR("Large Cave Node Size Variance", 6F),
 	CAVENODESIZE("Cave Node Size Multiplier", 1F),
-	VSTRETCH("Vertical Scale Factor", 1F),
-	DUNGEONRATE("Dungeon Spawn Factor", 1F);
+	VSTRETCH("Vertical Scale Factor", 1F);
 
 	public final boolean defaultState;
 	public final float defaultValue;
