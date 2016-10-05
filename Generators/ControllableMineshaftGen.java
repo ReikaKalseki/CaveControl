@@ -11,7 +11,6 @@ package Reika.CaveControl.Generators;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -23,7 +22,6 @@ import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 
 public class ControllableMineshaftGen extends MapGenMineshaft {
 
-	private static final Random rand = new Random();
 	private static final boolean global = CaveOptions.GLOBAL.getState();
 
 	private static final double BASE_FACTOR = 0.004;
