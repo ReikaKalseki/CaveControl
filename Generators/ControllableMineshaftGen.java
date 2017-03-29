@@ -15,14 +15,10 @@ import java.util.Map;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
-import Reika.CaveControl.CaveControl;
-import Reika.CaveControl.Registry.CaveOptions;
-import Reika.CaveControl.Registry.ControlOptions;
-import Reika.DragonAPI.Auxiliary.BiomeTypeList;
+import Reika.CaveControl.CaveDefinition.ControlOptions;
+import Reika.CaveControl.CaveLoader;
 
 public class ControllableMineshaftGen extends MapGenMineshaft {
-
-	private static final boolean global = CaveOptions.GLOBAL.getState();
 
 	private static final double BASE_FACTOR = 0.004;
 
@@ -37,18 +33,14 @@ public class ControllableMineshaftGen extends MapGenMineshaft {
 	}
 
 	@Override
-	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ)
-	{
+	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
 		return rand.nextDouble() < this.getConfig(worldObj, chunkX, chunkZ, ControlOptions.MINESHAFTS)*BASE_FACTOR ? super.canSpawnStructureAtCoords(chunkX, chunkZ) : false;
 	}
 
 	private float getConfig(World world, int chunkX, int chunkZ, ControlOptions c) {
-		if (global) {
-			return CaveControl.config.getGlobalFloat(c);
-		}
 		int x = chunkX*16;
 		int z = chunkZ*16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-		return c.getValue(BiomeTypeList.getEntry(biome));
+		return CaveLoader.instance.getDefinition(biome).getFloat(c);
 	}
 }

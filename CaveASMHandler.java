@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.classloading.FMLForgePlugin;
 
 import org.objectweb.asm.ClassReader;
@@ -28,8 +26,6 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import Reika.CaveControl.Registry.ControlOptions;
-import Reika.DragonAPI.Auxiliary.BiomeTypeList;
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
@@ -41,7 +37,7 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 
 	@Override
 	public String[] getASMTransformerClass() {
-		return new String[]{LegacyTransformer.class.getName()};
+		return new String[]{CaveTransformer.class.getName()};
 	}
 
 	@Override
@@ -64,12 +60,13 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 		return null;
 	}
 
-	public static class LegacyTransformer implements IClassTransformer {
+	public static class CaveTransformer implements IClassTransformer {
 
 		private static final HashMap<String, ClassPatch> classes = new HashMap();
 
 		private static enum ClassPatch {
 			DUNGEONRATE("net.minecraft.world.gen.ChunkProviderGenerate", "aqz"),
+			FLATGEN("net.minecraft.world.gen.ChunkProviderFlat", "aqu")
 			;
 
 			private final String obfName;
@@ -107,12 +104,30 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 								li.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/world/gen/ChunkProviderGenerate", world, "Lnet/minecraft/world/World;"));
 								li.add(new VarInsnNode(Opcodes.ILOAD, 2));
 								li.add(new VarInsnNode(Opcodes.ILOAD, 3));
-								li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/CaveControl/CaveASMHandler", "getDungeonGenAttempts", "(Lnet/minecraft/world/World;II)I", false));
+								li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/CaveControl/CaveHooks", "getDungeonGenAttempts", "(Lnet/minecraft/world/World;II)I", false));
 								m.instructions.insert(ain, li);
 								m.instructions.remove(ain);
 								break;
 							}
 						}
+						break;
+					}
+					case FLATGEN: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73154_d", "provideChunk", "(II)Lnet/minecraft/world/chunk/Chunk;");
+						AbstractInsnNode ain = ReikaASMHelper.getFirstFieldCall(cn, m, cn.name, FMLForgePlugin.RUNTIME_DEOBF ? "field_82696_f" : "structureGenerators");
+						ain = ain.getPrevious();
+
+						String world = FMLForgePlugin.RUNTIME_DEOBF ? "field_73163_a" : "worldObj";
+						InsnList li = new InsnList();
+						li.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						li.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						li.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/world/gen/ChunkProviderFlat", world, "Lnet/minecraft/world/World;"));
+						li.add(new VarInsnNode(Opcodes.ILOAD, 1));
+						li.add(new VarInsnNode(Opcodes.ILOAD, 2));
+						li.add(new VarInsnNode(Opcodes.ALOAD, 3)); //chunk
+						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/CaveControl/CaveHooks", "provideFlatChunk", "(Lnet/minecraft/world/gen/ChunkProviderFlat;Lnet/minecraft/world/World;IILnet/minecraft/world/chunk/Chunk;)V", false));
+
+						m.instructions.insertBefore(ain, li);
 						break;
 					}
 				}
@@ -146,36 +161,5 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 		}
 
 	}
-
-	public static int getDungeonGenAttempts(World world, int x, int z) {
-		BiomeGenBase biome = world.getBiomeGenForCoords(x << 4, z << 4);
-		return (int)(8*ControlOptions.DUNGEONRATE.getValue(BiomeTypeList.getEntry(biome)));
-	}
-	/*
-	class test extends ChunkProviderGenerate {
-
-		private World worldObj;
-		private Random rand;
-
-		public test(World p_i2006_1_, long p_i2006_2_, boolean p_i2006_4_) {
-			super(p_i2006_1_, p_i2006_2_, p_i2006_4_);
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public void populate(IChunkProvider p_73153_1_, int p_73153_2_, int p_73153_3_) {
-
-			int k1 = 0;
-			boolean doGen = true;
-			for (k1 = 0; doGen && k1 < CaveASMHandler.getDungeonGenAttempts(worldObj, p_73153_2_, p_73153_3_); ++k1)
-			{
-				int l1 = 0 + rand.nextInt(16) + 8;
-				int i2 = rand.nextInt(256);
-				int j2 = 0 + rand.nextInt(16) + 8;
-				(new WorldGenDungeons()).generate(worldObj, rand, l1, i2, j2);
-			}
-		}
-
-	}*/
 
 }

@@ -14,17 +14,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.MapGenRavine;
-import Reika.CaveControl.CaveControl;
-import Reika.CaveControl.Registry.CaveOptions;
-import Reika.CaveControl.Registry.ControlOptions;
-import Reika.DragonAPI.Auxiliary.BiomeTypeList;
+import Reika.CaveControl.CaveDefinition.ControlOptions;
+import Reika.CaveControl.CaveHooks;
+import Reika.CaveControl.CaveLoader;
 
 public class ControllableRavineGen extends MapGenRavine {
 
 	@Override
-	protected void func_151538_a(World world, int local_chunkX, int local_chunkZ, int chunkX, int chunkZ, Block[] columnData)
-	{
-		if (CaveControl.config.shouldGenerateRavines()) {
+	protected void func_151538_a(World world, int local_chunkX, int local_chunkZ, int chunkX, int chunkZ, Block[] columnData) {
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(chunkX*16, chunkZ*16);
+		if (CaveHooks.shouldGenerateRavines(biome)) {
 			float factor = this.getFactor(world, local_chunkX, local_chunkZ);
 			if (factor > 0) {
 				if (rand.nextInt(Math.max(1, (int)(50/factor))) == 0) {
@@ -47,13 +46,10 @@ public class ControllableRavineGen extends MapGenRavine {
 	}
 
 	private float getFactor(World world, int chunkX, int chunkZ) {
-		if (CaveOptions.GLOBAL.getState()) {
-			return CaveControl.config.getGlobalFloat(ControlOptions.RAVINES);
-		}
 		int x = chunkX*16;
 		int z = chunkZ*16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-		return ControlOptions.RAVINES.getValue(BiomeTypeList.getEntry(biome));
+		return CaveLoader.instance.getDefinition(biome).getFloat(ControlOptions.RAVINES);
 	}
 
 	@Override
@@ -65,9 +61,9 @@ public class ControllableRavineGen extends MapGenRavine {
 		//Edit data[index] to edit the block being written into by a cave; data[0] is the bottom bedrock layer
 		Block blockID = data[index];
 
-		if (!CaveControl.fillDeepCavesWithLava(biome)) {
+		if (!CaveHooks.fillDeepCavesWithLava(biome)) {
 			if (blockID == Blocks.flowing_lava || blockID == Blocks.lava) {
-				Block id = CaveControl.getBlockToFillDeepCaves(biome);
+				Block id = CaveHooks.getBlockToFillDeepCaves(biome);
 				data[index] = id;
 				if (id == Blocks.air) { //Smooth cave floors to y=4 with stone (so to avoid jagged bedrock floors)
 					for (int i = 1; i < 4; i++) { //not y=0 since that is always solid bedrock
@@ -87,7 +83,7 @@ public class ControllableRavineGen extends MapGenRavine {
 	protected boolean isOceanBlock(Block[] data, int index, int x, int y, int z, int chunkX, int chunkZ)
 	{
 		BiomeGenBase biome = worldObj.getBiomeGenForCoords(x + chunkX * 16, z + chunkZ * 16);
-		if (ControlOptions.DEEPWATER.getBoolean(BiomeTypeList.getEntry(biome)))
+		if (CaveHooks.getBlockToFillDeepCaves(biome) == Blocks.water)
 			return false;
 		return data[index] == Blocks.flowing_water || data[index] == Blocks.water;
 	}

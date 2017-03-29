@@ -11,13 +11,20 @@ package Reika.CaveControl.Registry;
 
 import Reika.CaveControl.CaveControl;
 import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
+import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
+import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
 
-public enum CaveOptions implements BooleanConfig {
+public enum CaveOptions implements BooleanConfig, DecimalConfig, IntegerConfig {
 
-	GLOBAL("Use Global Controls", true);
+	FLATCAVES("Generate Caves in Superflat", false),
+	FLATRAVINES("Generate Ravines in Superflat", false),
+	STRONGHOLDDIST("Stronghold Distance Factor", 1F),
+	STRONGHOLDCOUNT("Stronghold Count", 3);
 
 	private String label;
 	private boolean defaultState;
+	private int defaultValue;
+	private float defaultFloat;
 	private Class type;
 
 	public static final CaveOptions[] optionList = CaveOptions.values();
@@ -28,8 +35,28 @@ public enum CaveOptions implements BooleanConfig {
 		type = boolean.class;
 	}
 
+	private CaveOptions(String l, int d) {
+		label = l;
+		defaultValue = d;
+		type = int.class;
+	}
+
+	private CaveOptions(String l, float d) {
+		label = l;
+		defaultFloat = d;
+		type = float.class;
+	}
+
 	public boolean isBoolean() {
 		return type == boolean.class;
+	}
+
+	public boolean isNumeric() {
+		return type == int.class;
+	}
+
+	public boolean isDecimal() {
+		return type == float.class;
 	}
 
 	public Class getPropertyType() {
@@ -44,6 +71,14 @@ public enum CaveOptions implements BooleanConfig {
 		return (Boolean)CaveControl.config.getControl(this.ordinal());
 	}
 
+	public int getValue() {
+		return (Integer)CaveControl.config.getControl(this.ordinal());
+	}
+
+	public float getFloat() {
+		return (Float)CaveControl.config.getControl(this.ordinal());
+	}
+
 	public boolean isDummiedOut() {
 		return type == null;
 	}
@@ -51,6 +86,14 @@ public enum CaveOptions implements BooleanConfig {
 	@Override
 	public boolean getDefaultState() {
 		return defaultState;
+	}
+
+	public int getDefaultValue() {
+		return defaultValue;
+	}
+
+	public float getDefaultFloat() {
+		return defaultFloat;
 	}
 
 	@Override
