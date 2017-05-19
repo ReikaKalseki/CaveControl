@@ -12,6 +12,7 @@ package Reika.CaveControl;
 import java.io.File;
 import java.net.URL;
 
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.CaveControl.Generators.ControllableCaveGen;
 import Reika.CaveControl.Generators.ControllableMineshaftGen;
@@ -123,6 +124,11 @@ public class CaveControl extends DragonAPIMod {
 	@Override
 	public File getConfigFolder() {
 		return config.getConfigFolder();
+	}
+
+	@Override
+	protected Class<? extends IClassTransformer> getASMClass() {
+		return CaveASMHandler.CaveTransformer.class;
 	}
 
 }
