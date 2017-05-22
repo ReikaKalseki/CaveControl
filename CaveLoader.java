@@ -53,7 +53,7 @@ public class CaveLoader {
 		if (!f.exists()) {
 			try {
 				f.createNewFile();
-				ArrayList<String> li = data.getBlock("base").writeToStrings();
+				ArrayList<String> li = data.getBlock("global").writeToStrings();
 				ReikaFileReader.writeLinesToFile(f, li, true);
 			}
 			catch (Exception e) {
