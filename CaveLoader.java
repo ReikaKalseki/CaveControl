@@ -170,7 +170,7 @@ public class CaveLoader {
 	}
 
 	public CaveDefinition getDefinition(BiomeGenBase b) {
-		b = ReikaBiomeHelper.getParentBiomeType(b);
+		b = ReikaBiomeHelper.getParentBiomeType(b, true);
 		CaveDefinition c = entries.get(this.getIDString(b));
 		return c != null ? c : global;
 	}

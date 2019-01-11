@@ -19,7 +19,9 @@ public enum CaveOptions implements BooleanConfig, DecimalConfig, IntegerConfig {
 	FLATCAVES("Generate Caves in Superflat", false),
 	FLATRAVINES("Generate Ravines in Superflat", false),
 	STRONGHOLDDIST("Stronghold Distance Factor", 1F),
-	STRONGHOLDCOUNT("Stronghold Count", 3);
+	STRONGHOLDCOUNT("Stronghold Count", 3),
+	NOOCEANSTRONGHOLDS("Block Strongholds in Oceans", true),
+	SOLIDSTRONGHOLD("Make Strongholds Stay Intact", true);
 
 	private String label;
 	private boolean defaultState;

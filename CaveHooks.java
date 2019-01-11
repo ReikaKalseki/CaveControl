@@ -9,18 +9,47 @@
  ******************************************************************************/
 package Reika.CaveControl;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderFlat;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
+import net.minecraft.world.gen.structure.StructureComponent;
+import net.minecraft.world.gen.structure.StructureStrongholdPieces.Stronghold;
 import Reika.CaveControl.CaveDefinition.ControlOptions;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 
 
 public class CaveHooks {
+
+	public static void fillWithBlocks(StructureComponent struct, World world, StructureBoundingBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Block place, Block repl, boolean skipAir)
+	{
+		struct.fillWithBlocks(world, box, minX, minY, minZ, maxX, maxY, maxZ, place, repl, shouldSkipAir(struct, skipAir));
+	}
+
+	public static void fillWithMetadataBlocks(StructureComponent struct, World world, StructureBoundingBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Block place, int placeMeta, Block repl, int replMeta, boolean skipAir)
+	{
+		struct.fillWithMetadataBlocks(world, box, minX, minY, minZ, maxX, maxY, maxZ, place, placeMeta, repl, replMeta, shouldSkipAir(struct, skipAir));
+	}
+
+	public static void fillWithRandomizedBlocks(StructureComponent struct, World world, StructureBoundingBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean skipAir, Random rand, StructureComponent.BlockSelector blocks)
+	{
+		struct.fillWithRandomizedBlocks(world, box, minX, minY, minZ, maxX, maxY, maxZ, shouldSkipAir(struct, skipAir), rand, blocks);
+	}
+
+	public static void randomlyFillWithBlocks(StructureComponent struct, World world, StructureBoundingBox box, Random rand, float chance, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Block place, Block repl, boolean skipAir)
+	{
+		struct.randomlyFillWithBlocks(world, box, rand, chance, minX, minY, minZ, maxX, maxY, maxZ, place, repl, shouldSkipAir(struct, skipAir));
+	}
+
+	private static boolean shouldSkipAir(StructureComponent struct, boolean skipAir) {
+		return struct instanceof Stronghold ? skipAir && !CaveOptions.SOLIDSTRONGHOLD.getState() : skipAir;
+	}
 
 	public static void provideFlatChunk(ChunkProviderFlat f, World world, int x, int z, Chunk c) {
 		Block[] columnData = ReikaChunkHelper.getChunkAsColumnData(c);

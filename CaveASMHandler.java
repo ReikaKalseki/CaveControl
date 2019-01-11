@@ -66,7 +66,8 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 
 		private static enum ClassPatch {
 			DUNGEONRATE("net.minecraft.world.gen.ChunkProviderGenerate", "aqz"),
-			FLATGEN("net.minecraft.world.gen.ChunkProviderFlat", "aqu")
+			FLATGEN("net.minecraft.world.gen.ChunkProviderFlat", "aqu"),
+			STRONGHOLDSOLID("net.minecraft.world.gen.structure.StructureStrongholdPieces$Stronghold", "avc"),
 			;
 
 			private final String obfName;
@@ -129,6 +130,20 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 
 						m.instructions.insertBefore(ain, li);
 						break;
+					}
+					case STRONGHOLDSOLID: {
+						String n1 = FMLForgePlugin.RUNTIME_DEOBF ? "func_151549_a" : "fillWithBlocks";
+						String n2 = FMLForgePlugin.RUNTIME_DEOBF ? "func_151556_a" : "fillWithMetadataBlocks";
+						String n3 = FMLForgePlugin.RUNTIME_DEOBF ? "func_74882_a" : "fillWithRandomizedBlocks";
+						String n4 = FMLForgePlugin.RUNTIME_DEOBF ? "func_151551_a" : "randomlyFillWithBlocks";
+						String sig1 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;IIIIIILnet/minecraft/block/Block;Lnet/minecraft/block/Block;Z)V";
+						String sig2 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;IIIIIILnet/minecraft/block/Block;ILnet/minecraft/block/Block;IZ)V";
+						String sig3 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;IIIIIIZLjava/util/Random;Lnet/minecraft/world/gen/structure/StructureComponent$BlockSelector;)V";
+						String sig4 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;Ljava/util/Random;FIIIIIILnet/minecraft/block/Block;Lnet/minecraft/block/Block;Z)V";
+						ReikaASMHelper.rerouteMethod(cn, n1, "Reika/CaveControl/CaveHooks", "fillWithBlocks", sig1, true);
+						ReikaASMHelper.rerouteMethod(cn, n2, "Reika/CaveControl/CaveHooks", "fillWithMetadataBlocks", sig2, true);
+						ReikaASMHelper.rerouteMethod(cn, n3, "Reika/CaveControl/CaveHooks", "fillWithRandomizedBlocks", sig3, true);
+						ReikaASMHelper.rerouteMethod(cn, n4, "Reika/CaveControl/CaveHooks", "randomlyFillWithBlocks", sig4, true);
 					}
 				}
 				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);
