@@ -1,19 +1,17 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.CaveControl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.classloading.FMLForgePlugin;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -30,6 +28,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.classloading.FMLForgePlugin;
 
 @SortingIndex(1001)
 @MCVersion("1.7.10")
@@ -67,7 +67,8 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 		private static enum ClassPatch {
 			DUNGEONRATE("net.minecraft.world.gen.ChunkProviderGenerate", "aqz"),
 			FLATGEN("net.minecraft.world.gen.ChunkProviderFlat", "aqu"),
-			STRONGHOLDSOLID("net.minecraft.world.gen.structure.StructureStrongholdPieces$Stronghold", "avc"),
+			//STRONGHOLDSOLID("net.minecraft.world.gen.structure.StructureStrongholdPieces$Stronghold", "avc"),
+			//STRONGHOLDSOLID("net.minecraft.world.gen.structure.StructureComponent", "avk"),
 			;
 
 			private final String obfName;
@@ -130,7 +131,7 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 
 						m.instructions.insertBefore(ain, li);
 						break;
-					}
+					}/*
 					case STRONGHOLDSOLID: {
 						String n1 = FMLForgePlugin.RUNTIME_DEOBF ? "func_151549_a" : "fillWithBlocks";
 						String n2 = FMLForgePlugin.RUNTIME_DEOBF ? "func_151556_a" : "fillWithMetadataBlocks";
@@ -140,11 +141,17 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 						String sig2 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;IIIIIILnet/minecraft/block/Block;ILnet/minecraft/block/Block;IZ)V";
 						String sig3 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;IIIIIIZLjava/util/Random;Lnet/minecraft/world/gen/structure/StructureComponent$BlockSelector;)V";
 						String sig4 = "(Lnet/minecraft/world/World;Lnet/minecraft/world/gen/structure/StructureBoundingBox;Ljava/util/Random;FIIIIIILnet/minecraft/block/Block;Lnet/minecraft/block/Block;Z)V";
+						/*
 						ReikaASMHelper.rerouteMethod(cn, n1, "Reika/CaveControl/CaveHooks", "fillWithBlocks", sig1, true);
 						ReikaASMHelper.rerouteMethod(cn, n2, "Reika/CaveControl/CaveHooks", "fillWithMetadataBlocks", sig2, true);
 						ReikaASMHelper.rerouteMethod(cn, n3, "Reika/CaveControl/CaveHooks", "fillWithRandomizedBlocks", sig3, true);
 						ReikaASMHelper.rerouteMethod(cn, n4, "Reika/CaveControl/CaveHooks", "randomlyFillWithBlocks", sig4, true);
-					}
+					 *//*
+						modifyBoolean(cn, n1, sig1);
+						modifyBoolean(cn, n2, sig2);
+						modifyBoolean(cn, n3, sig3);
+						modifyBoolean(cn, n4, sig4);
+					}*/
 				}
 				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);
 				cn.accept(writer);
@@ -173,6 +180,24 @@ public class CaveASMHandler implements IFMLLoadingPlugin {
 				String s = !FMLForgePlugin.RUNTIME_DEOBF ? p.deobfName : p.obfName;
 				classes.put(s, p);
 			}
+		}
+
+		private static void modifyBoolean(ClassNode cn, String name, String sig) {
+			MethodNode m = ReikaASMHelper.getMethodByName(cn, name, sig);
+			ArrayList<String> args = ReikaASMHelper.parseMethodArguments(m);
+			int idx = 1;
+			for (String s : args) {
+				if (s.equals("Z")) {
+					break;
+				}
+				idx++;
+			}
+			InsnList li = new InsnList();
+			li.add(new VarInsnNode(Opcodes.ALOAD, 0));
+			li.add(new VarInsnNode(Opcodes.ILOAD, idx));
+			li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/CaveControl/CaveHooks", "shouldSkipAir", "(Lnet/minecraft/world/gen/structure/StructureComponent;Z)Z", false));
+			li.add(new VarInsnNode(Opcodes.ISTORE, idx));
+			m.instructions.insert(li);
 		}
 
 	}

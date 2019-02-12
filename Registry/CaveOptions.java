@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,10 +18,14 @@ public enum CaveOptions implements BooleanConfig, DecimalConfig, IntegerConfig {
 
 	FLATCAVES("Generate Caves in Superflat", false),
 	FLATRAVINES("Generate Ravines in Superflat", false),
-	STRONGHOLDDIST("Stronghold Distance Factor", 1F),
+	STRONGHOLDMIN("Stronghold Minimum Radius", 768),
+	STRONGHOLDMAX("Stronghold Maximum Radius", 1280),
 	STRONGHOLDCOUNT("Stronghold Count", 3),
+	STRONGHOLDRINGS("Stronghold Ring Count", 1),
+	STRONGHOLDRINGSCALE("Stronghold Ring Scale", 1F),
 	NOOCEANSTRONGHOLDS("Block Strongholds in Oceans", true),
-	SOLIDSTRONGHOLD("Make Strongholds Stay Intact", true);
+	//SOLIDSTRONGHOLD("Make Strongholds Stay Intact", true);
+	;
 
 	private String label;
 	private boolean defaultState;
