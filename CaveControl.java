@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -14,10 +14,7 @@ import java.net.URL;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.common.MinecraftForge;
-import Reika.CaveControl.Generators.ControllableCaveGen;
-import Reika.CaveControl.Generators.ControllableMineshaftGen;
-import Reika.CaveControl.Generators.ControllableRavineGen;
-import Reika.CaveControl.Generators.ControllableStrongholdGen;
+
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
@@ -26,6 +23,7 @@ import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -43,11 +41,6 @@ public class CaveControl extends DragonAPIMod {
 	public static final ControlledConfig config = new ControlledConfig(instance, CaveOptions.optionList, null);
 
 	public static ModLogger logger;
-
-	public static ControllableCaveGen caveGen;
-	public static ControllableMineshaftGen mineGen;
-	public static ControllableStrongholdGen strongholdGen;
-	public static ControllableRavineGen ravineGen;
 
 	//@SidedProxy(clientSide="Reika.CaveCraft.CaveClient", serverSide="Reika.CaveCraft.CaveCommon")
 	//public static CaveCommon proxy;
@@ -75,10 +68,6 @@ public class CaveControl extends DragonAPIMod {
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		this.startTiming(LoadPhase.LOAD);
-		caveGen = new ControllableCaveGen();
-		mineGen = new ControllableMineshaftGen();
-		strongholdGen = new ControllableStrongholdGen();
-		ravineGen = new ControllableRavineGen();
 		this.finishTiming();
 	}
 

@@ -15,6 +15,7 @@ import java.util.Map;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
+
 import Reika.CaveControl.CaveDefinition.ControlOptions;
 import Reika.CaveControl.CaveLoader;
 

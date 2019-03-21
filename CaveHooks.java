@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.CaveControl;
 
-import Reika.CaveControl.CaveDefinition.ControlOptions;
-import Reika.CaveControl.Registry.CaveOptions;
-import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -19,8 +16,19 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderFlat;
 
+import Reika.CaveControl.CaveDefinition.ControlOptions;
+import Reika.CaveControl.Generators.ControllableCaveGen;
+import Reika.CaveControl.Generators.ControllableRavineGen;
+import Reika.CaveControl.Registry.CaveOptions;
+import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
+
 
 public class CaveHooks {
+
+	private static long currentSeed = -1;
+	private static ControllableCaveGen caveGen;
+	private static ControllableRavineGen ravineGen;
+
 	/*
 	public static void fillWithBlocks(StructureComponent struct, World world, StructureBoundingBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Block place, Block repl, boolean skipAir)
 	{
@@ -49,11 +57,16 @@ public class CaveHooks {
 	 */
 	public static void provideFlatChunk(ChunkProviderFlat f, World world, int x, int z, Chunk c) {
 		Block[] columnData = ReikaChunkHelper.getChunkAsColumnData(c);
+		if (currentSeed != world.getSeed() || caveGen == null) {
+			currentSeed = world.getSeed();
+			caveGen = new ControllableCaveGen();
+			ravineGen = new ControllableRavineGen();
+		}
 		if (CaveOptions.FLATCAVES.getState()) {
-			CaveControl.caveGen.func_151539_a(f, world, x, z, columnData);
+			caveGen.func_151539_a(f, world, x, z, columnData);
 		}
 		if (CaveOptions.FLATRAVINES.getState()) {
-			CaveControl.ravineGen.func_151539_a(f, world, x, z, columnData);
+			ravineGen.func_151539_a(f, world, x, z, columnData);
 		}
 		ReikaChunkHelper.writeBlockColumnToChunk(c, columnData);
 	}

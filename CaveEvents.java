@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,6 +13,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+
+import Reika.CaveControl.Generators.ControllableCaveGen;
+import Reika.CaveControl.Generators.ControllableMineshaftGen;
+import Reika.CaveControl.Generators.ControllableRavineGen;
+import Reika.CaveControl.Generators.ControllableStrongholdGen;
+
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -30,20 +36,20 @@ public class CaveEvents {
 	public void caveControl(InitMapGenEvent ev) {
 		switch(ev.type) {
 			case CAVE:
-				ev.newGen = CaveControl.caveGen;
+				ev.newGen = new ControllableCaveGen();
 				break;
 			case MINESHAFT:
-				ev.newGen = CaveControl.mineGen;
+				ev.newGen = new ControllableMineshaftGen();
 				break;
 			case NETHER_BRIDGE:
 				break;
 			case RAVINE:
-				ev.newGen = CaveControl.ravineGen;
+				ev.newGen = new ControllableRavineGen();
 				break;
 			case SCATTERED_FEATURE:
 				break;
 			case STRONGHOLD:
-				ev.newGen = CaveControl.strongholdGen;
+				ev.newGen = new ControllableStrongholdGen();
 				break;
 			default:
 				//ev.newGen = ev.originalGen;

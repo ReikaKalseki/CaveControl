@@ -15,18 +15,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-import Reika.CaveControl.CaveControl;
-import Reika.CaveControl.CaveHooks;
-import Reika.CaveControl.Registry.CaveOptions;
-import Reika.DragonAPI.DragonOptions;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import net.minecraft.block.Block;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenOcean;
 import net.minecraft.world.gen.structure.MapGenStronghold;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
+
+import Reika.CaveControl.CaveControl;
+import Reika.CaveControl.CaveHooks;
+import Reika.CaveControl.Registry.CaveOptions;
+import Reika.DragonAPI.DragonOptions;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public final class ControllableStrongholdGen extends MapGenStronghold {
 
@@ -36,6 +40,12 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 	private static final int MAX_DIST = CaveOptions.STRONGHOLDMAX.getValue();
 	private static final int PER_RING = COUNT/CaveOptions.STRONGHOLDRINGS.getValue();
 	private static final double MAX_ANGLE = 360D/PER_RING;
+
+	private static final String LOGGER_TAG = "StrongholdChunks";
+
+	static {
+		ModularLogger.instance.addLogger(CaveControl.instance, LOGGER_TAG);
+	}
 
 	public ControllableStrongholdGen() {
 		super(new HashMap()/*getMap()*/);
@@ -51,10 +61,46 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 	}*/
 
 	@Override
+	public void func_151538_a(World world, int x, int z, int x2, int z2, Block[] data) {
+		super.func_151538_a(world, x, z, x2, z2, data);
+		if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
+			BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+			ModularLogger.instance.log(LOGGER_TAG, "Stronghold generation criteria @ "+x+", "+z+"in biome: "+biome.biomeName);
+			boolean oceanFail = CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN));
+			boolean shouldGenInBiome = CaveHooks.shouldGenerateStrongholds(biome);
+			boolean chunk = this.shouldSpawnStructureAtCoords(x, z);
+			ModularLogger.instance.log(LOGGER_TAG, "Should gen in biome: "+shouldGenInBiome+"; Valid Chunk: "+chunk+"; Ocean-blocked: "+oceanFail);
+		}
+	}
+
+	@Override
+	public ChunkPosition func_151545_a(World world, int x, int y, int z) {
+		ChunkPosition ret = super.func_151545_a(world, x, y, z);
+		if (world.checkChunksExist(x, y, z, x, y, z))
+			return ret;
+		double d = ret != null ? (ret.chunkPosX-x)*(ret.chunkPosX-x)+(ret.chunkPosZ-z)*(ret.chunkPosZ-z) : Double.POSITIVE_INFINITY;
+		for (ChunkCoordIntPair p : generationChunks) {
+			ChunkPosition ctr = p.func_151349_a(64);
+			double d2 = (ctr.chunkPosX-x)*(ctr.chunkPosX-x)+(ctr.chunkPosZ-z)*(ctr.chunkPosZ-z);
+			if (d2 < d) {
+				ret = ctr;
+				d = d2;
+			}
+		}
+		return ret;
+	}
+
+	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
 		BiomeGenBase biome = ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, chunkX << 4, chunkZ << 4);
-		if (CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN)))
+
+		if (CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN))) {
+			if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
+				if (CaveHooks.shouldGenerateStrongholds(biome) && this.shouldSpawnStructureAtCoords(chunkX, chunkZ))
+					CaveControl.logger.log("Planned stronghold generation @ "+chunkX+", "+chunkZ+" disallowed: "+biome.biomeName);
+			}
 			return false;
+		}
 		return CaveHooks.shouldGenerateStrongholds(biome) ? this.shouldSpawnStructureAtCoords(chunkX, chunkZ) : false;
 	}
 
