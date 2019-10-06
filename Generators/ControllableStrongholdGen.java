@@ -30,7 +30,6 @@ import Reika.CaveControl.CaveHooks;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public final class ControllableStrongholdGen extends MapGenStronghold {
 
@@ -92,7 +91,7 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 
 	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
-		BiomeGenBase biome = ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, chunkX << 4, chunkZ << 4);
+		BiomeGenBase biome = worldObj.getBiomeGenForCoords(chunkX, chunkZ);//ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, chunkX << 4, chunkZ << 4);
 
 		if (CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN))) {
 			if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
