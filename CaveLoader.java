@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -30,6 +30,7 @@ public class CaveLoader {
 	private LuaBlockDatabase data;
 
 	private final HashMap<String, CaveDefinition> entries = new HashMap();
+	private final HashMap<BiomeGenBase, String> ids = new HashMap();
 	private CaveDefinition global;
 
 	private CaveLoader() {
@@ -167,7 +168,12 @@ public class CaveLoader {
 	}
 
 	private String getIDString(BiomeGenBase b) {
-		return ReikaStringParser.stripSpaces(b.biomeID+"#"+b.biomeName);
+		String id = ids.get(b);
+		if (id == null) {
+			id = ReikaStringParser.stripSpaces(b.biomeID+"#"+b.biomeName);
+			ids.put(b, id);
+		}
+		return id;
 	}
 
 	public CaveDefinition getDefinition(BiomeGenBase b) {
