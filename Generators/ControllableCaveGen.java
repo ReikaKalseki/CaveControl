@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -99,9 +99,9 @@ public class ControllableCaveGen extends MapGenCaves {
 		return Math.max(1, (int)(100F/this.getLargeNodeFactor(world, chunkX, chunkZ)));//(int)(4/Math.sqrt(factor)); //defaults to 4
 	}
 
-	private boolean doGenAt(World world, int chunkX, int y, int chunkZ) {
-		int min = (int)this.getConfig(world, chunkX, chunkZ, ControlOptions.MINIMUMY);
-		int max = (int)this.getConfig(world, chunkX, chunkZ, ControlOptions.MAXIMUMY);
+	private boolean doGenAt(World world, int x, int y, int z) {
+		int min = (int)this.getConfig(world, x >> 4, z >> 4, ControlOptions.MINIMUMY);
+		int max = (int)this.getConfig(world, x >> 4, z >> 4, ControlOptions.MAXIMUMY);
 		return y >= min && y <= max;
 	}
 
@@ -114,8 +114,8 @@ public class ControllableCaveGen extends MapGenCaves {
 	}
 
 	private float getConfig(World world, int chunkX, int chunkZ, ControlOptions c) {
-		int x = chunkX*16;
-		int z = chunkZ*16;
+		int x = chunkX << 4;
+		int z = chunkZ << 4;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		return CaveLoader.instance.getDefinition(biome).getFloat(c);
 	}
