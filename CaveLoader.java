@@ -45,8 +45,8 @@ public class CaveLoader {
 		//global = new CaveDefinition("global", base);
 	}
 
-	private final String getSaveFolder() {
-		return CaveControl.config.getConfigFolder().getAbsolutePath()+"/Cave_Definitions/";
+	private final File getSaveFolder() {
+		return new File(CaveControl.config.getConfigFolder(), "Cave_Definitions");
 	}
 
 	public void generateGlobalFile() {
@@ -103,8 +103,7 @@ public class CaveLoader {
 		int ret = 0;
 		this.reset();
 		CaveControl.logger.log("Loading configs.");
-		String sg = this.getSaveFolder();
-		File f = new File(sg); //parent dir
+		File f = this.getSaveFolder(); //parent dir
 		if (f.exists()) {
 			this.loadFiles(f);
 			ret += this.parseConfigs();
