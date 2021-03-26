@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -28,8 +28,8 @@ public class CaveDefinition {
 			//if (!b.containsKeyInherit(c.luaTag))
 			//	throw new IllegalArgumentException("Error in definition for '"+name+"': Missing parameter '"+c.luaTag+"'!");
 			String val = b.getString(c.luaTag);
-			if (val.equals("[NULL PARENT INHERIT]"))
-				throw new IllegalArgumentException("Error in definition for '"+name+"': Missing parameter '"+c.luaTag+"'!");
+			if (LuaBlock.isErrorCode(val))
+				throw new IllegalArgumentException("Error in definition for '"+name+"': Missing parameter '"+c.luaTag+"', found "+val+"!");
 			options.put(c, val);
 		}
 	}
