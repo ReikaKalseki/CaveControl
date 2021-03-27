@@ -21,6 +21,7 @@ import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
+import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 
@@ -76,7 +77,12 @@ public class CaveControl extends DragonAPIMod {
 	public void postload(FMLPostInitializationEvent evt) {
 		this.startTiming(LoadPhase.POSTLOAD);
 		CaveLoader.instance.generateGlobalFile();
-		CaveLoader.instance.loadConfigs();
+		try {
+			CaveLoader.instance.loadConfigs();
+		}
+		catch (Exception e) {
+			throw new RegistrationException(this, "Configs could not be loaded! Delete them and try again.", e);
+		}
 		this.finishTiming();
 	}
 
