@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import Reika.CaveControl.CaveDefinition.ControlOptions;
@@ -29,8 +30,7 @@ public class CaveLoader {
 
 	private LuaBlockDatabase data;
 
-	private final HashMap<String, CaveDefinition> entries = new HashMap();
-	private final HashMap<BiomeGenBase, String> ids = new HashMap();
+	private final HashMap<BiomeGenBase, CaveDefinition> entries = new HashMap();
 	private CaveDefinition global;
 
 	private CaveLoader() {
@@ -80,7 +80,8 @@ public class CaveLoader {
 		li.add("Each block has a number of required parameters, detailed below:");
 		li.add("===========================================================================");
 		li.add("\"type\": The ID of the biome for which the definition applies. IDs are determined based on the biome name and ID;");
-		li.add("For example, vanilla plains would be "+this.getIDString(BiomeGenBase.plains)+", and mega taiga is "+this.getIDString(BiomeGenBase.megaTaiga));
+		li.add("For example, vanilla plains would be "+sampleIDString(BiomeGenBase.plains)+", and mega taiga is "+sampleIDString(BiomeGenBase.megaTaiga));
+		li.add("To specify by ID only, use '*' for the name.");
 		li.add("Note that mutated and subbiomes (eg Ice Spikes (Ice Plains), ForestHills, Extreme Hills Edge, and Flower Forest) cannot have their own definitions; they inherit from the parent biome.");
 		li.add("");
 		li.add("\"inherit\": Unspecified parameters are inherited from this parent. This prevents you from having to redefine all of the parameters");
@@ -145,7 +146,18 @@ public class CaveLoader {
 				}
 				else {
 					CaveControl.logger.debug("Loaded cave definition:\n"+cave);
-					entries.put(s, cave);
+					String[] parts = s.split("#");
+					if (parts.length != 2)
+						throw new IllegalArgumentException("Invalid fomratting");
+					int id = Integer.parseInt(parts[0]);
+					String name = parts[1];
+					BiomeGenBase biome = BiomeGenBase.biomeList[id];
+					if (biome == null)
+						throw new IllegalArgumentException("No such biome ID "+id);
+					if (biome.biomeName.equals(name) || "*".equals(name))
+						entries.put(biome, cave);
+					else
+						throw new IllegalArgumentException("Biome ID "+id+" maps to "+biome.biomeName+", not "+name);
 				}
 			}
 			catch (Exception e) {
@@ -166,19 +178,24 @@ public class CaveLoader {
 		global = null;
 	}
 
-	private String getIDString(BiomeGenBase b) {
-		String id = ids.get(b);
-		if (id == null) {
-			id = ReikaStringParser.stripSpaces(b.biomeID+"#"+b.biomeName);
-			ids.put(b, id);
-		}
-		return id;
+	private static String sampleIDString(BiomeGenBase b) {
+		return ReikaStringParser.stripSpaces(b.biomeID+"#"+b.biomeName);
 	}
 
-	public CaveDefinition getDefinition(BiomeGenBase b) {
-		b = ReikaBiomeHelper.getParentBiomeType(b, true);
-		CaveDefinition c = entries.get(this.getIDString(b));
+	public CaveDefinition getDefinition(World world, int x, int z) {
+		BiomeGenBase b = this.getEffectiveBiome(world, x, z);
+		CaveDefinition c = entries.get(b);
 		return c != null ? c : global;
+	}
+
+	public BiomeGenBase getEffectiveBiome(World world, int x, int z) {
+		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+		if (b == null) {
+			CaveControl.logger.logError("Found null biome at "+x+", "+z+"?!");
+			return null;
+		}
+		b = ReikaBiomeHelper.getParentBiomeType(b, true);
+		return b;
 	}
 
 	static class CaveLuaBlock extends LuaBlock {

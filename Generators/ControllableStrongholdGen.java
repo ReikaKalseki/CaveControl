@@ -27,6 +27,7 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 
 import Reika.CaveControl.CaveControl;
 import Reika.CaveControl.CaveHooks;
+import Reika.CaveControl.CaveLoader;
 import Reika.CaveControl.Registry.CaveOptions;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
@@ -63,10 +64,10 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 	public void func_151538_a(World world, int x, int z, int x2, int z2, Block[] data) {
 		super.func_151538_a(world, x, z, x2, z2, data);
 		if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
-			BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-			ModularLogger.instance.log(LOGGER_TAG, "Stronghold generation criteria @ "+x+", "+z+"in biome: "+biome.biomeName);
+			BiomeGenBase biome = CaveLoader.instance.getEffectiveBiome(world, x*16, z*16);
+			ModularLogger.instance.log(LOGGER_TAG, "Stronghold generation criteria @ "+(x*16)+", "+(z*16)+"in biome: "+biome.biomeName);
 			boolean oceanFail = CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN));
-			boolean shouldGenInBiome = CaveHooks.shouldGenerateStrongholds(biome);
+			boolean shouldGenInBiome = CaveHooks.shouldGenerateStrongholds(world, x*16, z*16);
 			boolean chunk = this.shouldSpawnStructureAtCoords(x, z);
 			ModularLogger.instance.log(LOGGER_TAG, "Should gen in biome: "+shouldGenInBiome+"; Valid Chunk: "+chunk+"; Ocean-blocked: "+oceanFail);
 		}
@@ -91,16 +92,17 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 
 	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
-		BiomeGenBase biome = worldObj.getBiomeGenForCoords(chunkX, chunkZ);//ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, chunkX << 4, chunkZ << 4);
-
-		if (CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN))) {
-			if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
-				if (CaveHooks.shouldGenerateStrongholds(biome) && this.shouldSpawnStructureAtCoords(chunkX, chunkZ))
-					CaveControl.logger.log("Planned stronghold generation @ "+chunkX+", "+chunkZ+" disallowed: "+biome.biomeName);
+		if (CaveOptions.NOOCEANSTRONGHOLDS.getState()) {
+			BiomeGenBase biome = CaveLoader.instance.getEffectiveBiome(worldObj, chunkX, chunkZ);
+			if (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN)) {
+				if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
+					if (CaveHooks.shouldGenerateStrongholds(worldObj, chunkX << 4, chunkZ << 4) && this.shouldSpawnStructureAtCoords(chunkX, chunkZ))
+						CaveControl.logger.log("Planned stronghold generation @ "+chunkX+", "+chunkZ+" disallowed: "+biome.biomeName);
+				}
+				return false;
 			}
-			return false;
 		}
-		return CaveHooks.shouldGenerateStrongholds(biome) ? this.shouldSpawnStructureAtCoords(chunkX, chunkZ) : false;
+		return CaveHooks.shouldGenerateStrongholds(worldObj, chunkX << 4, chunkZ << 4) ? this.shouldSpawnStructureAtCoords(chunkX, chunkZ) : false;
 	}
 
 	private boolean shouldSpawnStructureAtCoords(int x, int z) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
 
 import Reika.CaveControl.CaveDefinition.ControlOptions;
@@ -39,9 +38,6 @@ public class ControllableMineshaftGen extends MapGenMineshaft {
 	}
 
 	private float getConfig(World world, int chunkX, int chunkZ, ControlOptions c) {
-		int x = chunkX*16;
-		int z = chunkZ*16;
-		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-		return CaveLoader.instance.getDefinition(biome).getFloat(c);
+		return CaveLoader.instance.getDefinition(world, chunkX*16, chunkZ*16).getFloat(c);
 	}
 }

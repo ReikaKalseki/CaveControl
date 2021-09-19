@@ -10,7 +10,6 @@
 package Reika.CaveControl;
 
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 
@@ -63,8 +62,7 @@ public class CaveEvents {
 			World world = ev.world;
 			int x = ev.chunkX*16;
 			int z = ev.chunkZ*16;
-			BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-			if (!CaveHooks.shouldGenerateDungeons(biome))
+			if (!CaveHooks.shouldGenerateDungeons(world, x, z))
 				ev.setResult(Result.DENY);
 		}
 	}

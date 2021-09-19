@@ -12,7 +12,6 @@ package Reika.CaveControl;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderFlat;
 
@@ -71,37 +70,36 @@ public class CaveHooks {
 		ReikaChunkHelper.writeBlockColumnToChunk(c, columnData);
 	}
 
-	public static int getDungeonGenAttempts(World world, int x, int z) {
-		BiomeGenBase biome = world.getBiomeGenForCoords(x << 4, z << 4);
-		return (int)(8*CaveLoader.instance.getDefinition(biome).getFloat(ControlOptions.DUNGEONRATE));
+	public static int getDungeonGenAttempts(World world, int cx, int cz) {
+		return (int)(8*CaveLoader.instance.getDefinition(world, cx << 4, cz << 4).getFloat(ControlOptions.DUNGEONRATE));
 	}
 
-	public static boolean shouldGenerateCaves(BiomeGenBase b) {
-		return CaveLoader.instance.getDefinition(b).getFloat(ControlOptions.CAVES) > 0;
+	public static boolean shouldGenerateCaves(World world, int x, int z) {
+		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.CAVES) > 0;
 	}
 
-	public static boolean shouldGenerateRavines(BiomeGenBase b) {
-		return CaveLoader.instance.getDefinition(b).getFloat(ControlOptions.RAVINES) > 0;
+	public static boolean shouldGenerateRavines(World world, int x, int z) {
+		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.RAVINES) > 0;
 	}
 
-	public static boolean shouldGenerateMineshafts(BiomeGenBase b) {
-		return CaveLoader.instance.getDefinition(b).getFloat(ControlOptions.MINESHAFTS) > 0;
+	public static boolean shouldGenerateMineshafts(World world, int x, int z) {
+		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.MINESHAFTS) > 0;
 	}
 
-	public static boolean shouldGenerateStrongholds(BiomeGenBase b) {
-		return CaveLoader.instance.getDefinition(b).getBoolean(ControlOptions.STRONGHOLDS);
+	public static boolean shouldGenerateStrongholds(World world, int x, int z) {
+		return CaveLoader.instance.getDefinition(world, x, z).getBoolean(ControlOptions.STRONGHOLDS);
 	}
 
-	public static boolean shouldGenerateDungeons(BiomeGenBase b) {
-		return CaveLoader.instance.getDefinition(b).getFloat(ControlOptions.DUNGEONRATE) > 0;
+	public static boolean shouldGenerateDungeons(World world, int x, int z) {
+		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.DUNGEONRATE) > 0;
 	}
 
-	public static boolean fillDeepCavesWithLava(BiomeGenBase biome) {
-		return CaveLoader.instance.getDefinition(biome).getBoolean(ControlOptions.DEEPLAVA);
+	public static boolean fillDeepCavesWithLava(World world, int x, int z) {
+		return CaveLoader.instance.getDefinition(world, x, z).getBoolean(ControlOptions.DEEPLAVA);
 	}
 
-	public static Block getBlockToFillDeepCaves(BiomeGenBase biome) {
-		boolean water = CaveLoader.instance.getDefinition(biome).getBoolean(ControlOptions.DEEPWATER);
+	public static Block getBlockToFillDeepCaves(World world, int x, int z) {
+		boolean water = CaveLoader.instance.getDefinition(world, x, z).getBoolean(ControlOptions.DEEPWATER);
 		return water ? Blocks.water : Blocks.air;
 
 	}
