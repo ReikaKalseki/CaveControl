@@ -38,6 +38,6 @@ public class ControllableMineshaftGen extends MapGenMineshaft {
 	}
 
 	private float getConfig(World world, int chunkX, int chunkZ, ControlOptions c) {
-		return CaveLoader.instance.getDefinition(world, chunkX*16, chunkZ*16).getFloat(c);
+		return CaveLoader.instance.getDefinition(world, chunkX << 4, chunkZ << 4).getFloat(c);
 	}
 }

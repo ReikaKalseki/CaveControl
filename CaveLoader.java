@@ -154,7 +154,7 @@ public class CaveLoader {
 					BiomeGenBase biome = BiomeGenBase.biomeList[id];
 					if (biome == null)
 						throw new IllegalArgumentException("No such biome ID "+id);
-					if (biome.biomeName.equals(name) || "*".equals(name))
+					if (biome.biomeName.equals(name) || biome.biomeName.replace(" ", "").equals(name) || "*".equals(name))
 						entries.put(biome, cave);
 					else
 						throw new IllegalArgumentException("Biome ID "+id+" maps to "+biome.biomeName+", not "+name);
@@ -182,12 +182,14 @@ public class CaveLoader {
 		return ReikaStringParser.stripSpaces(b.biomeID+"#"+b.biomeName);
 	}
 
+	/** BLOCK COORDS */
 	public CaveDefinition getDefinition(World world, int x, int z) {
 		BiomeGenBase b = this.getEffectiveBiome(world, x, z);
 		CaveDefinition c = entries.get(b);
 		return c != null ? c : global;
 	}
 
+	/** BLOCK COORDS */
 	public BiomeGenBase getEffectiveBiome(World world, int x, int z) {
 		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
 		if (b == null) {

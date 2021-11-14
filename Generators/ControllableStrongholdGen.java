@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenOcean;
 import net.minecraft.world.gen.structure.MapGenStronghold;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
+import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
@@ -42,9 +44,11 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 	private static final double MAX_ANGLE = 360D/PER_RING;
 
 	private static final String LOGGER_TAG = "StrongholdChunks";
+	private static final String LOGGER_TAG2 = "StrongholdGen";
 
 	static {
 		ModularLogger.instance.addLogger(CaveControl.instance, LOGGER_TAG);
+		ModularLogger.instance.addLogger(CaveControl.instance, LOGGER_TAG2);
 	}
 
 	public ControllableStrongholdGen() {
@@ -62,10 +66,14 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 
 	@Override
 	public void func_151538_a(World world, int x, int z, int x2, int z2, Block[] data) {
+		if (ModularLogger.instance.isEnabled(LOGGER_TAG2) && this.shouldSpawnStructureAtCoords(x, z)) {
+			long key = ChunkCoordIntPair.chunkXZ2Int(x, z);
+			ModularLogger.instance.log(LOGGER_TAG2, "Attempting root gen in chunk "+x+", "+z+" ("+key+") = "+structureMap.get(key));
+		}
 		super.func_151538_a(world, x, z, x2, z2, data);
 		if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
 			BiomeGenBase biome = CaveLoader.instance.getEffectiveBiome(world, x*16, z*16);
-			ModularLogger.instance.log(LOGGER_TAG, "Stronghold generation criteria @ "+(x*16)+", "+(z*16)+"in biome: "+biome.biomeName);
+			ModularLogger.instance.log(LOGGER_TAG, "Stronghold generation criteria @ "+(x*16)+", "+(z*16)+" in biome: "+biome.biomeName);
 			boolean oceanFail = CaveOptions.NOOCEANSTRONGHOLDS.getState() && (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN));
 			boolean shouldGenInBiome = CaveHooks.shouldGenerateStrongholds(world, x*16, z*16);
 			boolean chunk = this.shouldSpawnStructureAtCoords(x, z);
@@ -74,7 +82,35 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 	}
 
 	@Override
+	public boolean generateStructuresInChunk(World world, Random rand, int x, int z) {
+		if (ModularLogger.instance.isEnabled(LOGGER_TAG2)) {
+			long key = ChunkCoordIntPair.chunkXZ2Int(x, z);
+			ModularLogger.instance.log(LOGGER_TAG2, "Attempting second-phase gen in chunk "+x+", "+z+" ("+key+") = "+structureMap.get(key));
+			int k = (x << 4) + 8;
+			int l = (z << 4) + 8;
+			for (Object o : structureMap.values()) {
+				StructureStart s = (StructureStart)o;
+				StructureBoundingBox box = s.getBoundingBox();
+				ModularLogger.instance.log(LOGGER_TAG2, "X="+s.func_143019_e()+" Z="+s.func_143018_f()+" - Sizeable: "+s.isSizeableStructure()+"; box: "+box+" here: "+box.intersectsWith(k, l, k + 15, l + 15));
+			}
+		}
+		return super.generateStructuresInChunk(world, rand, x, z);
+	}
+
+	@Override
+	protected StructureStart getStructureStart(int x, int z) {
+		StructureStart ret = super.getStructureStart(x, z);
+		if (ModularLogger.instance.isEnabled(LOGGER_TAG2)) {
+			ModularLogger.instance.log(LOGGER_TAG2, "Found structure start: "+ret);
+		}
+		return ret;
+	}
+
+	@Override
 	public ChunkPosition func_151545_a(World world, int x, int y, int z) {
+		if (generationChunks.isEmpty()) {
+			this.calculateLocations();
+		}
 		ChunkPosition ret = super.func_151545_a(world, x, y, z);
 		if (world.checkChunksExist(x, y, z, x, y, z))
 			return ret;
@@ -93,11 +129,11 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
 		if (CaveOptions.NOOCEANSTRONGHOLDS.getState()) {
-			BiomeGenBase biome = CaveLoader.instance.getEffectiveBiome(worldObj, chunkX, chunkZ);
+			BiomeGenBase biome = CaveLoader.instance.getEffectiveBiome(worldObj, (chunkX << 4) + 8, (chunkZ << 4) + 8);
 			if (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN)) {
 				if (ModularLogger.instance.isEnabled(LOGGER_TAG)) {
 					if (CaveHooks.shouldGenerateStrongholds(worldObj, chunkX << 4, chunkZ << 4) && this.shouldSpawnStructureAtCoords(chunkX, chunkZ))
-						CaveControl.logger.log("Planned stronghold generation @ "+chunkX+", "+chunkZ+" disallowed: "+biome.biomeName);
+						CaveControl.logger.log("Planned stronghold generation @ chunk "+chunkX+", "+chunkZ+" disallowed: "+biome.biomeName);
 				}
 				return false;
 			}
@@ -159,6 +195,9 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 
 	@Override
 	protected List getCoordList() {
+		if (generationChunks.isEmpty()) {
+			this.calculateLocations();
+		}
 		ArrayList<ChunkPosition> li = new ArrayList();
 		for (ChunkCoordIntPair p : generationChunks) {
 			li.add(p.func_151349_a(64));
