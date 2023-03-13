@@ -14,8 +14,10 @@ import java.util.Map;
 
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
+import net.minecraftforge.event.terraingen.InitMapGenEvent.EventType;
 
 import Reika.CaveControl.CaveDefinition.ControlOptions;
+import Reika.CaveControl.CaveHooks;
 import Reika.CaveControl.CaveLoader;
 
 public class ControllableMineshaftGen extends MapGenMineshaft {
@@ -34,6 +36,8 @@ public class ControllableMineshaftGen extends MapGenMineshaft {
 
 	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
+		if (!CaveHooks.canGenInWorld(worldObj, EventType.MINESHAFT))
+			return false;
 		return rand.nextDouble() < this.getConfig(worldObj, chunkX, chunkZ, ControlOptions.MINESHAFTS)*BASE_FACTOR ? super.canSpawnStructureAtCoords(chunkX, chunkZ) : false;
 	}
 

@@ -26,6 +26,7 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
+import net.minecraftforge.event.terraingen.InitMapGenEvent.EventType;
 
 import Reika.CaveControl.CaveControl;
 import Reika.CaveControl.CaveHooks;
@@ -128,6 +129,8 @@ public final class ControllableStrongholdGen extends MapGenStronghold {
 
 	@Override
 	protected boolean canSpawnStructureAtCoords(int chunkX, int chunkZ) {
+		if (!CaveHooks.canGenInWorld(worldObj, EventType.STRONGHOLD))
+			return false;
 		if (CaveOptions.NOOCEANSTRONGHOLDS.getState()) {
 			BiomeGenBase biome = CaveLoader.instance.getEffectiveBiome(worldObj, (chunkX << 4) + 8, (chunkZ << 4) + 8);
 			if (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.OCEAN)) {

@@ -14,8 +14,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderFlat;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.terraingen.InitMapGenEvent.EventType;
 
 import Reika.CaveControl.CaveDefinition.ControlOptions;
+import Reika.CaveControl.API.GenerationCheckEvent;
 import Reika.CaveControl.Generators.ControllableCaveGen;
 import Reika.CaveControl.Generators.ControllableRavineGen;
 import Reika.CaveControl.Registry.CaveOptions;
@@ -75,22 +78,32 @@ public class CaveHooks {
 	}
 
 	public static boolean shouldGenerateCaves(World world, int x, int z) {
+		if (!canGenInWorld(world, EventType.CAVE))
+			return false;
 		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.CAVES) > 0;
 	}
 
 	public static boolean shouldGenerateRavines(World world, int x, int z) {
+		if (!canGenInWorld(world, EventType.RAVINE))
+			return false;
 		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.RAVINES) > 0;
 	}
 
 	public static boolean shouldGenerateMineshafts(World world, int x, int z) {
+		if (!canGenInWorld(world, EventType.MINESHAFT))
+			return false;
 		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.MINESHAFTS) > 0;
 	}
 
 	public static boolean shouldGenerateStrongholds(World world, int x, int z) {
+		if (!canGenInWorld(world, EventType.STRONGHOLD))
+			return false;
 		return CaveLoader.instance.getDefinition(world, x, z).getBoolean(ControlOptions.STRONGHOLDS);
 	}
 
 	public static boolean shouldGenerateDungeons(World world, int x, int z) {
+		if (!canGenInWorld(world, EventType.SCATTERED_FEATURE))
+			return false;
 		return CaveLoader.instance.getDefinition(world, x, z).getFloat(ControlOptions.DUNGEONRATE) > 0;
 	}
 
@@ -101,7 +114,10 @@ public class CaveHooks {
 	public static Block getBlockToFillDeepCaves(World world, int x, int z) {
 		boolean water = CaveLoader.instance.getDefinition(world, x, z).getBoolean(ControlOptions.DEEPWATER);
 		return water ? Blocks.water : Blocks.air;
+	}
 
+	public static boolean canGenInWorld(World world, EventType structure) {
+		return !MinecraftForge.EVENT_BUS.post(new GenerationCheckEvent(world, structure));
 	}
 
 }
