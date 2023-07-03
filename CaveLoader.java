@@ -13,6 +13,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.common.base.Charsets;
+
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -56,7 +58,7 @@ public class CaveLoader {
 			try {
 				f.createNewFile();
 				ArrayList<String> li = data.getBlock("global").writeToStrings();
-				ReikaFileReader.writeLinesToFile(f, li, true);
+				ReikaFileReader.writeLinesToFile(f, li, true, Charsets.UTF_8);
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -97,7 +99,7 @@ public class CaveLoader {
 		li.add("Consult global.lua for an example definition file. Feel free to modify it as the base template from which others extend,");
 		li.add("but it should always have one and only one definition - that of the base template.");
 		li.add("Note: If a biome has no specific template specified, it entirely uses the behavior defined in global.");
-		ReikaFileReader.writeLinesToFile(f, li, true);
+		ReikaFileReader.writeLinesToFile(f, li, true, Charsets.UTF_8);
 	}
 
 	public int loadConfigs() {
