@@ -11,18 +11,24 @@ package Reika.CaveControl;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
+
+import net.minecraft.world.World;
 
 import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 
 
 
-public class CaveDefinition {
+public class CaveDefinition implements Comparable<CaveDefinition> {
 
 	private static final HashMap<String, ControlOptions> lookups = new HashMap();
 
+	private final String name;
+	private final HashSet<Integer> dimensionFilter = new HashSet();
 	private final EnumMap<ControlOptions, String> options = new EnumMap(ControlOptions.class);
 
-	public CaveDefinition(String name, LuaBlock b) {
+	public CaveDefinition(String n, LuaBlock b) {
+		name = n;
 		for (int i = 0; i < ControlOptions.optionList.length; i++) {
 			ControlOptions c = ControlOptions.optionList[i];
 			//if (!b.containsKeyInherit(c.luaTag))
@@ -32,6 +38,14 @@ public class CaveDefinition {
 				throw new IllegalArgumentException("Error in definition for '"+name+"': Missing parameter '"+c.luaTag+"', found "+val+"!");
 			options.put(c, val);
 		}
+	}
+
+	public void addDimensionID(int dim) {
+		dimensionFilter.add(dim);
+	}
+
+	public boolean isApplicable(World world) {
+		return dimensionFilter.isEmpty() || dimensionFilter.contains(world.provider.dimensionId);
 	}
 
 	public int getInt(ControlOptions c) {
@@ -44,6 +58,11 @@ public class CaveDefinition {
 
 	public float getFloat(ControlOptions c) {
 		return Float.parseFloat(options.get(c));
+	}
+
+	@Override
+	public int compareTo(CaveDefinition o) {
+		return String.CASE_INSENSITIVE_ORDER.compare(name, o.name);
 	}
 
 	public static enum ControlOptions {

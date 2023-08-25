@@ -11,7 +11,7 @@ package Reika.CaveControl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 
 import com.google.common.base.Charsets;
 
@@ -20,6 +20,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 import Reika.CaveControl.CaveDefinition.ControlOptions;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Instantiable.IO.LuaBlock.LuaBlockDatabase;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
@@ -32,7 +33,7 @@ public class CaveLoader {
 
 	private LuaBlockDatabase data;
 
-	private final HashMap<BiomeGenBase, CaveDefinition> entries = new HashMap();
+	private final MultiMap<BiomeGenBase, CaveDefinition> entries = new MultiMap<BiomeGenBase, CaveDefinition>().setNullEmpty().setOrdered((c1, c2) -> c1.compareTo(c2));
 	private CaveDefinition global;
 
 	private CaveLoader() {
@@ -156,8 +157,13 @@ public class CaveLoader {
 					BiomeGenBase biome = BiomeGenBase.biomeList[id];
 					if (biome == null)
 						throw new IllegalArgumentException("No such biome ID "+id);
+					LuaBlock dims = b.getChild("dimensions");
+					if (dims != null) {
+						for (String val : dims.getDataValues())
+							cave.addDimensionID(Integer.parseInt(val));
+					}
 					if (biome.biomeName.equals(name) || biome.biomeName.replace(" ", "").equals(name) || "*".equals(name))
-						entries.put(biome, cave);
+						entries.addValue(biome, cave);
 					else
 						throw new IllegalArgumentException("Biome ID "+id+" maps to "+biome.biomeName+", not "+name);
 				}
@@ -187,8 +193,14 @@ public class CaveLoader {
 	/** BLOCK COORDS */
 	public CaveDefinition getDefinition(World world, int x, int z) {
 		BiomeGenBase b = this.getEffectiveBiome(world, x, z);
-		CaveDefinition c = entries.get(b);
-		return c != null ? c : global;
+		Collection<CaveDefinition> c = entries.get(b);
+		if (c == null)
+			return global;
+		for (CaveDefinition d : c) {
+			if (d.isApplicable(world))
+				return d;
+		}
+		return global;
 	}
 
 	/** BLOCK COORDS */
